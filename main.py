@@ -67,17 +67,20 @@ def generate_response(filename, openai_api_key, model, query_text):
         run = wait_on_run(client, run, thread)
         messages = get_response(client, thread)
         
-        # Delete the file and vector store
-        deleted_vector_store_file = client.vector_stores.files.delete(
-            vector_store_id=TMP_VECTOR_STORE_ID,
-            file_id=TMP_FILE_ID
-        )
+    return messages, TMP_FILE_ID, TMP_VECTOR_STORE_ID, thread.id
 
-        deleted_vector_store = client.vector_stores.delete(
-            vector_store_id=TMP_VECTOR_STORE_ID
-        )
-        
-    return messages
+def delete_vectors(client, TMP_FILE_ID, TMP_VECTOR_STORE_ID):
+    # Delete the file and vector store
+    deleted_vector_store_file = client.vector_stores.files.delete(
+        vector_store_id=TMP_VECTOR_STORE_ID,
+        file_id=TMP_FILE_ID
+    )
+
+    deleted_vector_store = client.vector_stores.delete(
+        vector_store_id=TMP_VECTOR_STORE_ID
+    )
+    
+    
 
 # Model list, Vector store ID
 MODEL_LIST = ["gpt-4.1-nano", "gpt-4o-mini", "gpt-4.1", "o4-mini"]
@@ -122,7 +125,7 @@ if doc_ex:
     
         # Form input and query
         with st.form("doc_form", clear_on_submit=True):
-            submit_doc_ex = st.form_submit_button("Submit File")
+            submit_doc_ex = st.form_submit_button("Submit File", on_click=disable)
     
             if not openai_api_key:
                 st.error("Please enter your OpenAI API key!")
@@ -131,7 +134,12 @@ if doc_ex:
             if submit_doc_ex and doc_ex:
                 query_text = "I need your help analyzing the document temp.txt."
                 with st.spinner('Calculating...'):
-                    response = generate_response("temp.txt", openai_api_key, model, query_text)
+                    (response, TMP_FILE_ID, TMP_VECTOR_STORE_ID, TMP_THREAD_ID) = generate_response("temp.txt", openai_api_key, model, query_text)
+
+                with st.form(key="doc_ex_form"):
+                    query_doc_ex = st.text_area("Document examination...")
+                    submit_doc_ex_form = st.form_submit_button("Submit")
+                
                 st.write("*Matia is an AI-driven platform designed to review and analyze documents. The system continues to be refined. Users should review the original file and verify the summary for reliability and relevance.*")
                 st.write("#### Summary")
                 i = 0
@@ -139,6 +147,15 @@ if doc_ex:
                     if i > 0:
                         st.markdown(m.content[0].text.value)
                     i += 1
+
+                if submit_doc_ex_form:
+                    
+                    client.beta.threads.messages.create(
+                        thread_id=TMP_THREAD_ID, role="user", content=query_doc_ex
+                    )
+
+                    
+                delete_vectors(client, TMP_FILE_ID, TMP_VECTOR_STORE_ID)
 
                 # st.write(response.output_text)
                 # st.write(response.output[1].content[0].text)
