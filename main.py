@@ -171,10 +171,7 @@ if submit_doc_ex and doc_ex and not delete_file:
                 # j += 1
 
 if doc_ex and delete_file:
-    st.session_state["uploaded_file"] += 1
-
-    st.stop()
-    
+    uploaded_file = None  
     delete_vectors(client, TMP_FILE_ID, TMP_VECTOR_STORE_ID)
     # Clear the file uploader by incrementing the key
     
