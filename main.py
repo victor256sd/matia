@@ -67,16 +67,6 @@ def generate_response(filename, openai_api_key, model, query_text):
         run = wait_on_run(client, run, thread)
         messages = get_response(client, thread)
         
-        # response = client.responses.create(
-        #     input = query_text,
-        #     model = model,
-        #     temperature = 1,
-        #     tools = [{
-        #         "type": "file_search",
-        #         "vector_store_ids": [TMP_VECTOR_STORE_ID],
-        #     }]
-        # )
-
         # Delete the file and vector store
         deleted_vector_store_file = client.vector_stores.files.delete(
             vector_store_id=TMP_VECTOR_STORE_ID,
