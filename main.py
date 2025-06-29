@@ -139,7 +139,7 @@ if doc_ex:
                 st.stop()
             
             if submit_doc_ex and doc_ex:
-                query_text = "Matia is an AI-driven platform designed to review and analyze documents. The system continues to be refined. Users should review the original file and verify the summary for reliability and relevance."
+                query_text = "I need your help analyzing the document temp.txt."
                 with st.spinner('Calculating...'):
                     response = generate_response("temp.txt", openai_api_key, model, query_text)
                 st.write("Matia is an AI-driven platform designed to review and analyze documents. The system continues to be refined. Users should review the original file and verify the summary for reliability and relevance.")
