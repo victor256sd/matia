@@ -147,7 +147,7 @@ if doc_ex:
                 i = 0
                 for m in response:
                     if i > 0:
-                        st.markdown(m.content[0].text.value) if i > 0
+                        st.markdown(m.content[0].text.value)
                     i += 1
 
                 # st.write(response.output_text)
