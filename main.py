@@ -9,10 +9,6 @@ import json
 import requests
 
 
-MATH_ASSISTANT_ID = assistant.id  # or a hard-coded ID like "asst-..."
-
-client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY", "<your OpenAI API key if not set as env var>"))
-
 def submit_message(assistant_id, thread, user_message):
     client.beta.threads.messages.create(
         thread_id=thread.id, role="user", content=user_message
@@ -56,20 +52,19 @@ assistant = client.beta.assistants.update(
     },
 )
 
-
-
 def generate_response(filename, openai_api_key, model, query_text):
     # Load document if file is uploaded
     if filename is not None:
+        MATH_ASSISTANT_ID = "asst_dkmUbE5LjBWGMSAwWUCr4PNg"
         client = OpenAI(api_key=openai_api_key)
 
-        # MAX_CHUNK_SIZE = 200
-        # CHUNK_OVERLAP = 100
-        # st.write("Chunk Size/Overlap: ",MAX_CHUNK_SIZE,"/",CHUNK_OVERLAP)
+        client.beta.threads.messages.create(
+            thread_id=thread.id, role="user", content=query_text
+        )
         
         file = client.files.create(
             file=open(filename, "rb"),
-            purpose="user_data"
+            purpose="assistants"
         )
 
         vector_store = client.vector_stores.create(
@@ -81,28 +76,9 @@ def generate_response(filename, openai_api_key, model, query_text):
                         
         batch_add = client.vector_stores.file_batches.create(
             vector_store_id=TMP_VECTOR_STORE_ID,
-            file_ids=[TMP_FILE_ID],
-            # chunking_strategy=[{
-            #     "type": "static",
-            #     "static": {
-            #         "max_chunk_size_tokens": MAX_CHUNK_SIZE,
-            #         "chunk_overlap_tokens": CHUNK_OVERLAP
-            #     }
-            # }]
+            file_ids=[TMP_FILE_ID]
         )
-            
-        #     {
-        #     "vector_store_id": TMP_VECTOR_STORE_ID,
-        #     "file_ids": TMP_FILE_ID,
-        #     "chunking_strategy": {
-        #         "type": "static",
-        #         "static": {
-        #             "max_chunk_size_tokens": MAX_CHUNK_SIZE,
-        #             "chunk_overlap_tokens": CHUNK_OVERLAP
-        #         }
-        #     }
-        # })
-        
+                    
         response = client.responses.create(
             input = query_text,
             model = model,
@@ -123,15 +99,6 @@ def generate_response(filename, openai_api_key, model, query_text):
             vector_store_id=TMP_VECTOR_STORE_ID
         )
         
-        # try:
-        #     url = f"https://api.openai.com/v1/files/{TMP_FILE_ID}"
-        #     del_response = requests.delete(url, headers=headers)
-        #     del_response.raise_for_status()            
-        #     return response
-            
-        # except Exception as e:
-        #     return response
-
     return response
 
 # Model list, Vector store ID
@@ -184,8 +151,9 @@ if doc_ex:
                 st.stop()
             
             if submit_doc_ex and doc_ex:
+                query_text = "I need help analyzing temp.txt."
                 with st.spinner('Calculating...'):
-                    response = generate_response("temp.txt", openai_api_key, model, template_prompt)
+                    response = generate_response("temp.txt", openai_api_key, model, query_text)
                 st.write("[The summary may not always reflect the most current or precise information. Users are encouraged to review the original file and verify the data independently to ensure its reliability and relevance.]\n")
                 st.write("Summary: ")
                 st.write(response.output_text)
