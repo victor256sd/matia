@@ -133,7 +133,7 @@ if doc_ex:
             st.stop()
     
         # Form input and query
-        with st.form("doc_form", clear_on_submit=True):
+        with st.form("doc_form", clear_on_submit=False):
             submit_doc_ex = st.form_submit_button("Submit File", on_click="disable")
             delete_file = st.form_submit_button("Delete Uploaded Data", on_click="disable")
             
