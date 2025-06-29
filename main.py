@@ -142,7 +142,7 @@ if doc_ex:
                 query_text = "I need your help analyzing the document temp.txt."
                 with st.spinner('Calculating...'):
                     response = generate_response("temp.txt", openai_api_key, model, query_text)
-                st.write("Matia is an AI-driven platform designed to review and analyze documents. The system continues to be refined. Users should review the original file and verify the summary for reliability and relevance.")
+                st.write("*Matia is an AI-driven platform designed to review and analyze documents. The system continues to be refined. Users should review the original file and verify the summary for reliability and relevance.*")
                 st.write("#### Summary")
                 i = 0
                 for m in response:
