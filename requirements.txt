@@ -1,0 +1,6 @@
+openai
+openpyxl
+pandas
+requests
+streamlit
+tiktoken
