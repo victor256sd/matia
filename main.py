@@ -151,7 +151,7 @@ if doc_ex:
                     delete_vectors(client, TMP_FILE_ID, TMP_VECTOR_STORE_ID)
 
         if submit_doc_ex and doc_ex and not delete_file:
-            with st.form(key="doc_ex_form"):
+            with st.form(key="doc_ex_form", clear_on_submit=False):
                 query_doc_ex = st.text_area("**Document Examination**")
                 submit_doc_ex_form = st.form_submit_button("Doc-Ex Submit")
         
@@ -184,7 +184,7 @@ if not openai_api_key:
     st.error("Please enter your OpenAI API key!")
     st.stop()
     
-with st.form(key="qa_form"):
+with st.form(key="qa_form", clear_on_submit=False):
     query = st.text_area("**Matia Library**")
     submit = st.form_submit_button("Library Submission")
             
