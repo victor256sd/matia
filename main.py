@@ -158,28 +158,29 @@ if not openai_api_key:
     st.stop()
     
 with st.form(key="qa_form"):
-    query = st.text_area("Ask a question...")
+    query = st.text_area("Interact with the matia library...")
     submit = st.form_submit_button("Submit")
             
 if submit:
     if not query:
-        st.error("Please enter a question!")
+        st.error("Enter a query!")
         st.stop()
             
     # Output Columns
     answer_col, sources_col = st.columns(2)
 
     client2 = OpenAI(api_key=openai_api_key)
-    response2 = client2.responses.create(
-        input = query,
-        model = model,
-        temperature = 0.3,
-        tools = [{
-                    "type": "file_search",
-                    "vector_store_ids": [VECTOR_STORE_ID],
-        }],
-        include=["output[*].file_search_call.search_results"]
-    )
+    with st.spinner('Calculating...'):
+        response2 = client2.responses.create(
+            input = query,
+            model = model,
+            temperature = 0.3,
+            tools = [{
+                        "type": "file_search",
+                        "vector_store_ids": [VECTOR_STORE_ID],
+            }],
+            include=["output[*].file_search_call.search_results"]
+        )
     
     with answer_col:
         st.markdown("#### Response")
