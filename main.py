@@ -162,6 +162,8 @@ if submit_doc_ex and doc_ex and not delete_file:
             run = wait_on_run(client, run, thread)
             messages = get_response(client, thread)
 
+            st.stop()
+            
             # j = i
             for m in response:
                 # if j > i:
@@ -169,9 +171,12 @@ if submit_doc_ex and doc_ex and not delete_file:
                 # j += 1
 
 if doc_ex and delete_file:
+    st.session_state["uploaded_file"] += 1
+
+    st.stop()
+    
     delete_vectors(client, TMP_FILE_ID, TMP_VECTOR_STORE_ID)
     # Clear the file uploader by incrementing the key
-    st.session_state["uploaded_file"] += 1
     
 if not openai_api_key:
     st.error("Please enter your OpenAI API key!")
