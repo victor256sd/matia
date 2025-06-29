@@ -95,8 +95,8 @@ def generate_response(filename, openai_api_key, model, query_text):
 MODEL_LIST = ["gpt-4.1-nano", "gpt-4o-mini", "gpt-4.1", "o4-mini"]
 VECTOR_STORE_ID = "vs_6858ab8cb9e881919572b5b2f09669df"
 
-st.set_page_config(page_title="matia2", page_icon="📖", layout="wide")
-st.header("matia2")
+st.set_page_config(page_title="matia1", page_icon="📖", layout="wide")
+st.header("matia1")
 
 api_key_input = st.text_input(
         "OpenAI API Key",
@@ -145,7 +145,7 @@ if doc_ex:
                 with st.spinner('Calculating...'):
                     response = generate_response("temp.txt", openai_api_key, model, query_text)
                 st.write("[The summary may not always reflect the most current or precise information. Users are encouraged to review the original file and verify the data independently to ensure its reliability and relevance.]\n")
-                st.write("# Summary")
+                st.write("#### Summary")
                 for m in response:
                     st.write("matia1: {m.content[0].text.value}")
 
