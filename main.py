@@ -23,7 +23,6 @@ def get_response(client, thread):
 def generate_response(filename, openai_api_key, model, query_text):    
     # Load document if file is uploaded
     if filename is not None:
-        MATH_ASSISTANT_ID = "asst_CE2FhokCAd4uD9uQhybDGFoX"
         client = OpenAI(api_key=openai_api_key)
         thread = client.beta.threads.create()
 
@@ -86,6 +85,7 @@ def disable_button():
 # Model list, Vector store ID
 MODEL_LIST = ["gpt-4.1-nano", "gpt-4o-mini", "gpt-4.1", "o4-mini"]
 VECTOR_STORE_ID = "vs_6858ab8cb9e881919572b5b2f09669df"
+MATH_ASSISTANT_ID = "asst_CE2FhokCAd4uD9uQhybDGFoX"
 
 st.set_page_config(page_title="matia1", page_icon="📖", layout="wide")
 st.header("matia1")
@@ -158,6 +158,10 @@ if doc_ex:
                 if submit_doc_ex_form:                    
                     client.beta.threads.messages.create(
                         thread_id=thread.id, role="user", content=query_doc_ex
+                    )
+                    client.beta.threads.runs.create(
+                        thread_id=thread.id,
+                        assistant_id=MATH_ASSISTANT_ID,
                     )
                     run = wait_on_run(client, run, thread)
                     response = get_response(client, thread)
