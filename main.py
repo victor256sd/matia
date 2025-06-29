@@ -220,6 +220,6 @@ if submit:
         annotations = response2.output[1].content[0].annotations
         
         # Get top-k retrieved filenames
-        retrieved_files = set([response2.filename for response in annotations])   
+        retrieved_files = set([response2.filename for response2 in annotations])   
         
         st.markdown(f'Files used: {retrieved_files}')    
