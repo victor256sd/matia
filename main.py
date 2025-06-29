@@ -20,10 +20,7 @@ def wait_on_run(client, run, thread):
 def get_response(client, thread):
     return client.beta.threads.messages.list(thread_id=thread.id, order="asc")
 
-def generate_response(filename, openai_api_key, model, query_text):
-
-    st.write("in generate_response function...")
-    
+def generate_response(filename, openai_api_key, model, query_text):    
     # Load document if file is uploaded
     if filename is not None:
         MATH_ASSISTANT_ID = "asst_CE2FhokCAd4uD9uQhybDGFoX"
@@ -42,8 +39,6 @@ def generate_response(filename, openai_api_key, model, query_text):
         vector_store = client.vector_stores.create(
             name="matia"
         )
-
-        st.write("openai client initiated, thread, temp file, and vector store created...")
         
         TMP_VECTOR_STORE_ID = str(vector_store.id)
         TMP_FILE_ID = str(file.id)
@@ -87,6 +82,9 @@ def delete_vectors(client, TMP_FILE_ID, TMP_VECTOR_STORE_ID):
         vector_store_id=TMP_VECTOR_STORE_ID
     )
 
+def disable_button():
+    st.session_state.disabled = True
+
 # Model list, Vector store ID
 MODEL_LIST = ["gpt-4.1-nano", "gpt-4o-mini", "gpt-4.1", "o4-mini"]
 VECTOR_STORE_ID = "vs_6858ab8cb9e881919572b5b2f09669df"
@@ -119,23 +117,19 @@ if doc_ex:
         df['combined_text'] = df.apply(lambda row: ' '.join(row.values.astype(str)), axis=1)
         json_string = df.to_json(path_or_buf=None)
         serialized_data = json.dumps(json_string, indent=4)
-
-        st.write("Excel file serialized...")
         
         with open("temp.txt", "w") as file:
             file.write(serialized_data)
         file.close()
 
-        st.write("temp.txt written...")
-        
         if not openai_api_key:
             st.error("Please enter your OpenAI API key!")
             st.stop()
     
         # Form input and query
         with st.form("doc_form", clear_on_submit=False):
-            submit_doc_ex = st.form_submit_button("Submit File", on_click="disable")
-            delete_file = st.form_submit_button("Delete Uploaded Data", on_click="disable")
+            submit_doc_ex = st.form_submit_button("Submit File", on_click=disable_button)
+            delete_file = st.form_submit_button("Delete Uploaded Data", on_click=disable_button)
             
             if not openai_api_key:
                 st.error("Please enter your OpenAI API key!")
@@ -143,9 +137,6 @@ if doc_ex:
             
             if submit_doc_ex and doc_ex:
                 query_text = "I need your help analyzing the document temp.txt."
-
-                st.write("just before generate_response function...")
-                st.stop()
                 
                 with st.spinner('Calculating...'):
                     (response, TMP_FILE_ID, TMP_VECTOR_STORE_ID, TMP_THREAD_ID) = generate_response("temp.txt", openai_api_key, model, query_text)
