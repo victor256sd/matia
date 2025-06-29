@@ -81,7 +81,7 @@ def delete_vectors(client, TMP_FILE_ID, TMP_VECTOR_STORE_ID):
     )
 
 def disable_button():
-    st.session_state.disabled = True
+    st.session_state.disabled = True        
 
 # Model list, Vector store ID
 MODEL_LIST = ["gpt-4.1-nano", "gpt-4o-mini", "gpt-4.1", "o4-mini"]
@@ -108,7 +108,7 @@ with st.expander("Advanced Options"):
 
 if doc_ex:
     # File uploader for Excel files
-    uploaded_file = st.file_uploader("Choose an Excel file", type=["xlsx"])
+    uploaded_file = st.file_uploader("Choose an Excel file", type=["xlsx"], key="uploaded_file")
 
     if uploaded_file:
         df = pd.read_excel(uploaded_file, engine='openpyxl')
@@ -168,7 +168,7 @@ if doc_ex:
         if delete_file:
             delete_vectors(client, TMP_FILE_ID, TMP_VECTOR_STORE_ID)
             # Clear the file uploader by incrementing the key
-            st.session_state["uploader_key"] += 1
+            st.session_state["uploaded_file"] += 1
 
         # st.write(response.output_text)
         # st.write(response.output[1].content[0].text)
