@@ -67,7 +67,7 @@ def generate_response(filename, openai_api_key, model, query_text):
         run = wait_on_run(client, run, thread)
         messages = get_response(client, thread)
         
-    return messages, TMP_FILE_ID, TMP_VECTOR_STORE_ID, thread.id
+    return messages, TMP_FILE_ID, TMP_VECTOR_STORE_ID, client, run, thread
 
 def delete_vectors(client, TMP_FILE_ID, TMP_VECTOR_STORE_ID):
     # Delete the file and vector store
@@ -137,7 +137,7 @@ if doc_ex:
                 query_text = "I need your help analyzing the document temp.txt."
                 
                 with st.spinner('Calculating...'):
-                    (response, TMP_FILE_ID, TMP_VECTOR_STORE_ID, TMP_THREAD_ID) = generate_response("temp.txt", openai_api_key, model, query_text)
+                    (response, TMP_FILE_ID, TMP_VECTOR_STORE_ID, client, run, thread) = generate_response("temp.txt", openai_api_key, model, query_text)
                 
                 st.write("*Matia is an AI-driven platform designed to review and analyze documents. The system continues to be refined. Users should review the original file and verify the summary for reliability and relevance.*")
                 st.write("#### Summary")
@@ -147,31 +147,31 @@ if doc_ex:
                         st.markdown(m.content[0].text.value)
                     i += 1
 
-        if submit_doc_ex and not delete_file:
-            with st.form(key="doc_ex_form"):
-                query_doc_ex = st.text_area("Document examination...")
-                submit_doc_ex_form = st.form_submit_button("Doc-Ex Submit")
-    
-                if submit_doc_ex_form:                    
-                    client.beta.threads.messages.create(
-                        thread_id=TMP_THREAD_ID, role="user", content=query_doc_ex
-                    )
-                    run = wait_on_run(client, run, thread)
-                    messages = get_response(client, thread)
-
-                    # j = i
-                    for m in response:
-                        # if j > i:
-                        st.markdown(m.content[0].text.value)
-                        # j += 1
-
-        if delete_file:
-            delete_vectors(client, TMP_FILE_ID, TMP_VECTOR_STORE_ID)
-            # Clear the file uploader by incrementing the key
-            st.session_state["uploaded_file"] += 1
-
         # st.write(response.output_text)
         # st.write(response.output[1].content[0].text)
+
+if submit_doc_ex and doc_ex and not delete_file:
+    with st.form(key="doc_ex_form"):
+        query_doc_ex = st.text_area("Document examination...")
+        submit_doc_ex_form = st.form_submit_button("Doc-Ex Submit")
+
+        if submit_doc_ex_form:                    
+            client.beta.threads.messages.create(
+                thread_id=TMP_THREAD_ID, role="user", content=query_doc_ex
+            )
+            run = wait_on_run(client, run, thread)
+            messages = get_response(client, thread)
+
+            # j = i
+            for m in response:
+                # if j > i:
+                st.markdown(m.content[0].text.value)
+                # j += 1
+
+if doc_ex and delete_file:
+    delete_vectors(client, TMP_FILE_ID, TMP_VECTOR_STORE_ID)
+    # Clear the file uploader by incrementing the key
+    st.session_state["uploaded_file"] += 1
     
 if not openai_api_key:
     st.error("Please enter your OpenAI API key!")
