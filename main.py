@@ -157,7 +157,7 @@ if submit_doc_ex and doc_ex and not delete_file:
 
         if submit_doc_ex_form:                    
             client.beta.threads.messages.create(
-                thread_id=TMP_THREAD_ID, role="user", content=query_doc_ex
+                thread_id=thread.id, role="user", content=query_doc_ex
             )
             run = wait_on_run(client, run, thread)
             messages = get_response(client, thread)
