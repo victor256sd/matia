@@ -7,56 +7,26 @@ import openai
 from openai import OpenAI
 import json
 import requests
+import time
 
+def wait_on_run(client, run, thread):
+    while run.status == "queued" or run.status == "in_progress":
+        run = client.beta.threads.runs.retrieve(
+            thread_id=thread.id,
+            run_id=run.id,
+        )
+        time.sleep(0.5)
+    return run
 
-def submit_message(assistant_id, thread, user_message):
-    client.beta.threads.messages.create(
-        thread_id=thread.id, role="user", content=user_message
-    )
-    return client.beta.threads.runs.create(
-        thread_id=thread.id,
-        assistant_id=assistant_id,
-    )
-
-
-def get_response(thread):
+def get_response(client, thread):
     return client.beta.threads.messages.list(thread_id=thread.id, order="asc")
-
-assistant = client.beta.assistants.update(
-    MATH_ASSISTANT_ID,
-    tools=[{"type": "code_interpreter"}],
-)
-show_json(assistant)
-
-thread, run = create_thread_and_run(
-    "Generate the first 20 fibbonaci numbers with code."
-)
-run = wait_on_run(run, thread)
-pretty_print(get_response(thread))
-
-run_steps = client.beta.threads.runs.steps.list(
-    thread_id=thread.id, run_id=run.id, order="asc"
-)
-
-# Update Assistant
-assistant = client.beta.assistants.update(
-    MATH_ASSISTANT_ID,
-    tools=[{"type": "code_interpreter"}, {"type": "file_search"}],
-    tool_resources={
-        "file_search":{
-            "vector_store_ids": [vector_store.id]
-        },
-        "code_interpreter": {
-            "file_ids": [file.id]
-        }
-    },
-)
 
 def generate_response(filename, openai_api_key, model, query_text):
     # Load document if file is uploaded
     if filename is not None:
         MATH_ASSISTANT_ID = "asst_dkmUbE5LjBWGMSAwWUCr4PNg"
         client = OpenAI(api_key=openai_api_key)
+        thread = client.beta.threads.create()
 
         client.beta.threads.messages.create(
             thread_id=thread.id, role="user", content=query_text
@@ -78,16 +48,36 @@ def generate_response(filename, openai_api_key, model, query_text):
             vector_store_id=TMP_VECTOR_STORE_ID,
             file_ids=[TMP_FILE_ID]
         )
-                    
-        response = client.responses.create(
-            input = query_text,
-            model = model,
-            temperature = 1,
-            tools = [{
-                "type": "file_search",
-                "vector_store_ids": [TMP_VECTOR_STORE_ID],
-            }]
+
+        # Update Assistant
+        assistant = client.beta.assistants.update(
+            MATH_ASSISTANT_ID,
+            tools=[{"type": "file_search"}],
+            tool_resources={
+                "file_search":{
+                    "vector_store_ids": [TMP_VECTOR_STORE_ID]
+                    }
+                }
+            },
         )
+
+        run = client.beta.threads.runs.create(
+            thread_id=thread.id,
+            assistant_id=assistant.id,
+        )
+
+        run = wait_on_run(client, run, thread)
+        messages = get_response(client, thread)
+        
+        # response = client.responses.create(
+        #     input = query_text,
+        #     model = model,
+        #     temperature = 1,
+        #     tools = [{
+        #         "type": "file_search",
+        #         "vector_store_ids": [TMP_VECTOR_STORE_ID],
+        #     }]
+        # )
 
         # Delete the file and vector store
         deleted_vector_store_file = client.vector_stores.files.delete(
@@ -99,7 +89,7 @@ def generate_response(filename, openai_api_key, model, query_text):
             vector_store_id=TMP_VECTOR_STORE_ID
         )
         
-    return response
+    return messages
 
 # Model list, Vector store ID
 MODEL_LIST = ["gpt-4.1-nano", "gpt-4o-mini", "gpt-4.1", "o4-mini"]
@@ -151,12 +141,15 @@ if doc_ex:
                 st.stop()
             
             if submit_doc_ex and doc_ex:
-                query_text = "I need help analyzing temp.txt."
+                query_text = "I need help analyzing the document temp.txt."
                 with st.spinner('Calculating...'):
                     response = generate_response("temp.txt", openai_api_key, model, query_text)
                 st.write("[The summary may not always reflect the most current or precise information. Users are encouraged to review the original file and verify the data independently to ensure its reliability and relevance.]\n")
-                st.write("Summary: ")
-                st.write(response.output_text)
+                st.write("# Summary")
+                for m in response:
+                    st.write("matia1: {m.content[0].text.value}")
+
+                # st.write(response.output_text)
                 # st.write(response.output[1].content[0].text)
     
 if not openai_api_key:
@@ -168,7 +161,6 @@ with st.form(key="qa_form"):
     submit = st.form_submit_button("Submit")
             
 if submit:
-
     if not query:
         st.error("Please enter a question!")
         st.stop()
