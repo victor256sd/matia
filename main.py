@@ -152,7 +152,7 @@ if doc_ex:
 
 if submit_doc_ex and doc_ex and not delete_file:
     with st.form(key="doc_ex_form"):
-        query_doc_ex = st.text_area("Document examination...")
+        query_doc_ex = st.text_area("**Document Examination**")
         submit_doc_ex_form = st.form_submit_button("Doc-Ex Submit")
 
         if submit_doc_ex_form:                    
@@ -183,7 +183,7 @@ if not openai_api_key:
     st.stop()
     
 with st.form(key="qa_form"):
-    query = st.text_area("Interact with the matia library...")
+    query = st.text_area("**Matia Library**")
     submit = st.form_submit_button("Library Submission")
             
 if submit:
