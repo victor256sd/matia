@@ -153,8 +153,15 @@ if doc_ex:
                     client.beta.threads.messages.create(
                         thread_id=TMP_THREAD_ID, role="user", content=query_doc_ex
                     )
+                    run = wait_on_run(client, run, thread)
+                    messages = get_response(client, thread)
 
-                    
+                    # j = i
+                    for m in response:
+                        # if j > i:
+                        st.markdown(m.content[0].text.value)
+                        # j += 1
+
                 delete_vectors(client, TMP_FILE_ID, TMP_VECTOR_STORE_ID)
 
                 # st.write(response.output_text)
