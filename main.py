@@ -23,7 +23,7 @@ def get_response(client, thread):
 def generate_response(filename, openai_api_key, model, query_text):
     # Load document if file is uploaded
     if filename is not None:
-        MATH_ASSISTANT_ID = "asst_dkmUbE5LjBWGMSAwWUCr4PNg"
+        MATH_ASSISTANT_ID = "asst_CE2FhokCAd4uD9uQhybDGFoX"
         client = OpenAI(api_key=openai_api_key)
         thread = client.beta.threads.create()
 
