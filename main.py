@@ -6,7 +6,6 @@ import tiktoken
 import openai
 from openai import OpenAI
 import json
-import requests
 import time
 
 def wait_on_run(client, run, thread):
