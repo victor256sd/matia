@@ -147,34 +147,31 @@ if doc_ex:
                         st.markdown(m.content[0].text.value)
                     i += 1
 
+        if submit_doc_ex and doc_ex and not delete_file:
+            with st.form(key="doc_ex_form"):
+                query_doc_ex = st.text_area("**Document Examination**")
+                submit_doc_ex_form = st.form_submit_button("Doc-Ex Submit")
+        
+                if submit_doc_ex_form:                    
+                    client.beta.threads.messages.create(
+                        thread_id=thread.id, role="user", content=query_doc_ex
+                    )
+                    run = wait_on_run(client, run, thread)
+                    response = get_response(client, thread)
+                            
+                    # j = i
+                    for m in response:
+                        # if j > i:
+                        st.markdown(m.content[0].text.value)
+                        # j += 1
+        
+        if doc_ex and delete_file:
+            uploaded_file = None  
+            delete_vectors(client, TMP_FILE_ID, TMP_VECTOR_STORE_ID)
+
         # st.write(response.output_text)
         # st.write(response.output[1].content[0].text)
 
-if submit_doc_ex and doc_ex and not delete_file:
-    with st.form(key="doc_ex_form"):
-        query_doc_ex = st.text_area("**Document Examination**")
-        submit_doc_ex_form = st.form_submit_button("Doc-Ex Submit")
-
-        if submit_doc_ex_form:                    
-            client.beta.threads.messages.create(
-                thread_id=thread.id, role="user", content=query_doc_ex
-            )
-            run = wait_on_run(client, run, thread)
-            messages = get_response(client, thread)
-
-            st.stop()
-            
-            # j = i
-            for m in response:
-                # if j > i:
-                st.markdown(m.content[0].text.value)
-                # j += 1
-
-if doc_ex and delete_file:
-    uploaded_file = None  
-    delete_vectors(client, TMP_FILE_ID, TMP_VECTOR_STORE_ID)
-    # Clear the file uploader by incrementing the key
-    
 if not openai_api_key:
     st.error("Please enter your OpenAI API key!")
     st.stop()
