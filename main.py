@@ -143,6 +143,10 @@ if doc_ex:
             
             if submit_doc_ex and doc_ex:
                 query_text = "I need your help analyzing the document temp.txt."
+
+                st.write("just before generate_response function...")
+                st.stop()
+                
                 with st.spinner('Calculating...'):
                     (response, TMP_FILE_ID, TMP_VECTOR_STORE_ID, TMP_THREAD_ID) = generate_response("temp.txt", openai_api_key, model, query_text)
 
