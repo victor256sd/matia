@@ -59,8 +59,6 @@ def generate_response(filename, openai_api_key, model, query_text):
             }
         )
 
-        st.write("assistant linked to uploaded data...")
-        
         run = client.beta.threads.runs.create(
             thread_id=thread.id,
             assistant_id=assistant.id,
@@ -152,7 +150,7 @@ if doc_ex:
         if submit_doc_ex and not delete_file:
             with st.form(key="doc_ex_form"):
                 query_doc_ex = st.text_area("Document examination...")
-                submit_doc_ex_form = st.form_submit_button("Submit")
+                submit_doc_ex_form = st.form_submit_button("Doc-Ex Submit")
     
                 if submit_doc_ex_form:                    
                     client.beta.threads.messages.create(
@@ -181,7 +179,7 @@ if not openai_api_key:
     
 with st.form(key="qa_form"):
     query = st.text_area("Interact with the matia library...")
-    submit = st.form_submit_button("Submit")
+    submit = st.form_submit_button("Library Submission")
             
 if submit:
     if not query:
