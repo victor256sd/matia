@@ -21,6 +21,9 @@ def get_response(client, thread):
     return client.beta.threads.messages.list(thread_id=thread.id, order="asc")
 
 def generate_response(filename, openai_api_key, model, query_text):
+
+    st.write("in generate_response function...")
+    
     # Load document if file is uploaded
     if filename is not None:
         MATH_ASSISTANT_ID = "asst_CE2FhokCAd4uD9uQhybDGFoX"
@@ -39,6 +42,8 @@ def generate_response(filename, openai_api_key, model, query_text):
         vector_store = client.vector_stores.create(
             name="matia"
         )
+
+        st.write("openai client initiated, thread, temp file, and vector store created...")
         
         TMP_VECTOR_STORE_ID = str(vector_store.id)
         TMP_FILE_ID = str(file.id)
@@ -59,6 +64,8 @@ def generate_response(filename, openai_api_key, model, query_text):
             }
         )
 
+        st.write("assistant linked to uploaded data...")
+        
         run = client.beta.threads.runs.create(
             thread_id=thread.id,
             assistant_id=assistant.id,
@@ -113,10 +120,14 @@ if doc_ex:
         json_string = df.to_json(path_or_buf=None)
         serialized_data = json.dumps(json_string, indent=4)
 
+        st.write("Excel file serialized...")
+        
         with open("temp.txt", "w") as file:
             file.write(serialized_data)
         file.close()
-                
+
+        st.write("temp.txt written...")
+        
         if not openai_api_key:
             st.error("Please enter your OpenAI API key!")
             st.stop()
