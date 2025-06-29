@@ -127,7 +127,7 @@ if doc_ex:
         # Form input and query
         with st.form("doc_form", clear_on_submit=False):
             submit_doc_ex = st.form_submit_button("Submit File", on_click=disable_button)
-            delete_file = st.form_submit_button("Delete Uploaded Data", on_click=disable_button)
+            delete_file = st.form_submit_button("Delete Vectors", on_click=disable_button)
             
             if not openai_api_key:
                 st.error("Please enter your OpenAI API key!")
@@ -147,6 +147,9 @@ if doc_ex:
                         st.markdown(m.content[0].text.value)
                     i += 1
 
+                if doc_ex and delete_file:
+                    delete_vectors(client, TMP_FILE_ID, TMP_VECTOR_STORE_ID)
+
         if submit_doc_ex and doc_ex and not delete_file:
             with st.form(key="doc_ex_form"):
                 query_doc_ex = st.text_area("**Document Examination**")
@@ -165,10 +168,6 @@ if doc_ex:
                         st.markdown(m.content[0].text.value)
                         # j += 1
         
-        if doc_ex and delete_file:
-            uploaded_file = None  
-            delete_vectors(client, TMP_FILE_ID, TMP_VECTOR_STORE_ID)
-
         # st.write(response.output_text)
         # st.write(response.output[1].content[0].text)
 
