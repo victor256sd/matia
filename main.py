@@ -169,7 +169,7 @@ if doc_ex:
                     
                     response = get_response(client, thread)
 
-                    st.write("Obtained doc-ex response..."
+                    st.write("Obtained doc-ex response...")
                     
                     # j = i
                     for m in response:
