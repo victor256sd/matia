@@ -145,7 +145,7 @@ if doc_ex:
                 st.write("[The summary may not always reflect the most current or precise information. Users are encouraged to review the original file and verify the data independently to ensure its reliability and relevance.]\n")
                 st.write("#### Summary")
                 for m in response:
-                    st.write("matia1: ", m.content[0].text.value})
+                    st.write("matia1: ", m.content[0].text.value)
 
                 # st.write(response.output_text)
                 # st.write(response.output[1].content[0].text)
