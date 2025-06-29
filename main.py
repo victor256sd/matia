@@ -8,16 +8,55 @@ from openai import OpenAI
 import json
 import requests
 
-# Example prompt
-template_prompt=f'''As a threat assessment and threat management advisor, provide professional responses using a structured format. The document provided, temp.txt, contains information from a possibly concerning individual.\n\n
-# STEPS \n\n
-First, provide a summary of the entire document. \n
-Second, describe any concerning text that might indicate fixation on particular topics, identification with individuals or ideologies, grievance, violent ideation, research and planning for violence, preparation for violence, or online reconnaissance for an attack. \n\n
-# OUTPUT FORMAT \n\n
--**Summary**: [One paragraph summary of the entire document.] \n
--**Concerning Entries**: [Analysis of concerning entries, maximum 2-3 paragraphs.] \n
--**Pro-Social Interests**: [Analysis of any possible non-violent interests, maximum 1 paragraph.] \n
--**Recommendations**: [Any recommednations for further investigation, brief review of concerning entries found, maximum 1 paragraph.]'''
+
+MATH_ASSISTANT_ID = assistant.id  # or a hard-coded ID like "asst-..."
+
+client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY", "<your OpenAI API key if not set as env var>"))
+
+def submit_message(assistant_id, thread, user_message):
+    client.beta.threads.messages.create(
+        thread_id=thread.id, role="user", content=user_message
+    )
+    return client.beta.threads.runs.create(
+        thread_id=thread.id,
+        assistant_id=assistant_id,
+    )
+
+
+def get_response(thread):
+    return client.beta.threads.messages.list(thread_id=thread.id, order="asc")
+
+assistant = client.beta.assistants.update(
+    MATH_ASSISTANT_ID,
+    tools=[{"type": "code_interpreter"}],
+)
+show_json(assistant)
+
+thread, run = create_thread_and_run(
+    "Generate the first 20 fibbonaci numbers with code."
+)
+run = wait_on_run(run, thread)
+pretty_print(get_response(thread))
+
+run_steps = client.beta.threads.runs.steps.list(
+    thread_id=thread.id, run_id=run.id, order="asc"
+)
+
+# Update Assistant
+assistant = client.beta.assistants.update(
+    MATH_ASSISTANT_ID,
+    tools=[{"type": "code_interpreter"}, {"type": "file_search"}],
+    tool_resources={
+        "file_search":{
+            "vector_store_ids": [vector_store.id]
+        },
+        "code_interpreter": {
+            "file_ids": [file.id]
+        }
+    },
+)
+
+
 
 def generate_response(filename, openai_api_key, model, query_text):
     # Load document if file is uploaded
