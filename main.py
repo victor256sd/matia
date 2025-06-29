@@ -56,9 +56,8 @@ def generate_response(filename, openai_api_key, model, query_text):
             tool_resources={
                 "file_search":{
                     "vector_store_ids": [TMP_VECTOR_STORE_ID]
-                    }
                 }
-            },
+            }
         )
 
         run = client.beta.threads.runs.create(
