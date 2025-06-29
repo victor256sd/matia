@@ -79,8 +79,6 @@ def delete_vectors(client, TMP_FILE_ID, TMP_VECTOR_STORE_ID):
     deleted_vector_store = client.vector_stores.delete(
         vector_store_id=TMP_VECTOR_STORE_ID
     )
-    
-    
 
 # Model list, Vector store ID
 MODEL_LIST = ["gpt-4.1-nano", "gpt-4o-mini", "gpt-4.1", "o4-mini"]
@@ -126,7 +124,8 @@ if doc_ex:
         # Form input and query
         with st.form("doc_form", clear_on_submit=True):
             submit_doc_ex = st.form_submit_button("Submit File", on_click=disable)
-    
+            delete_file = st.form_submit_button("Delete Uploaded Data", on_click_disable)
+            
             if not openai_api_key:
                 st.error("Please enter your OpenAI API key!")
                 st.stop()
@@ -162,7 +161,10 @@ if doc_ex:
                         st.markdown(m.content[0].text.value)
                         # j += 1
 
-                delete_vectors(client, TMP_FILE_ID, TMP_VECTOR_STORE_ID)
+                if delete_file:
+                    delete_vectors(client, TMP_FILE_ID, TMP_VECTOR_STORE_ID)
+                    # Clear the file uploader by incrementing the key
+                    st.session_state["uploader_key"] += 1
 
                 # st.write(response.output_text)
                 # st.write(response.output[1].content[0].text)
