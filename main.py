@@ -164,8 +164,13 @@ if doc_ex:
                         assistant_id=MATH_ASSISTANT_ID,
                     )
                     run = wait_on_run(client, run, thread)
+
+                    st.write("Completed doc-ex run...")
+                    
                     response = get_response(client, thread)
-                            
+
+                    st.write("Obtained doc-ex response..."
+                    
                     # j = i
                     for m in response:
                         # if j > i:
