@@ -129,11 +129,11 @@ if doc_ex:
         with st.form("doc_form", clear_on_submit=False):
             # col1, col2, col3, col4, col5, col6 = st.columns(6)
             # with col1:
-            submit_doc_ex = st.form_submit_button("Submit File", on_click=disable_button)
+            submit_doc_ex = st.form_submit_button("Standard Examination", on_click=disable_button)
             # with col2:
             #     delete_file = st.form_submit_button("Delete Vectors", on_click=disable_button)
-            query_doc_ex = st.text_area("**Document Examination**")
-            submit_doc_ex_form = st.form_submit_button("Doc-Ex Submit")
+            query_doc_ex = st.text_area("**Custom Queries**")
+            submit_doc_ex_form = st.form_submit_button("Submit Query")
             
             if not openai_api_key:
                 st.error("Please enter your OpenAI API key!")
@@ -179,12 +179,12 @@ if not openai_api_key:
     st.stop()
     
 with st.form(key="qa_form", clear_on_submit=False):
-    query = st.text_area("**Matia Library**")
-    submit = st.form_submit_button("Library Submission")
+    query = st.text_area("**Search Library Holdings**")
+    submit = st.form_submit_button("Search")
             
 if submit:
     if not query:
-        st.error("Enter a query!")
+        st.error("Enter a question to search the library!")
         st.stop()
             
     # Output Columns
