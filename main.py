@@ -126,8 +126,11 @@ if doc_ex:
     
         # Form input and query
         with st.form("doc_form", clear_on_submit=False):
-            submit_doc_ex = st.form_submit_button("Submit File", on_click=disable_button)
-            delete_file = st.form_submit_button("Delete Vectors", on_click=disable_button)
+            col1, col2 = st.columns(2)
+            with col1:
+                submit_doc_ex = st.form_submit_button("Submit File", on_click=disable_button)
+            with col2:
+                delete_file = st.form_submit_button("Delete Vectors", on_click=disable_button)
             query_doc_ex = st.text_area("**Document Examination**")
             submit_doc_ex_form = st.form_submit_button("Doc-Ex Submit")
             
