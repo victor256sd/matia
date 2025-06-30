@@ -149,32 +149,20 @@ if doc_ex:
                         st.markdown(m.content[0].text.value)
                     i += 1
 
-                if doc_ex and delete_file:
-                    delete_vectors(client, TMP_FILE_ID, TMP_VECTOR_STORE_ID)
+                delete_vectors(client, TMP_FILE_ID, TMP_VECTOR_STORE_ID)
 
         if submit_doc_ex and doc_ex and not delete_file:        
             if submit_doc_ex_form:                    
-                client.beta.threads.messages.create(
-                    thread_id=thread.id, role="user", content=query_doc_ex
-                )
-                client.beta.threads.runs.create(
-                    thread_id=thread.id,
-                    assistant_id=MATH_ASSISTANT_ID,
-                )
-                run = wait_on_run(client, run, thread)
+                with st.spinner('Calculating...'):
+                    (response, TMP_FILE_ID, TMP_VECTOR_STORE_ID, client, run, thread) = generate_response("temp.txt", openai_api_key, model, query_doc_ex)
 
-                st.write("Completed doc-ex run...")
-                
-                response = get_response(client, thread)
-
-                st.write("Obtained doc-ex response...")
-                
-                # j = i
+                st.write("*Matia is an AI-driven platform designed to review and analyze documents. The system continues to be refined. Users should review the original file and verify the summary for reliability and relevance.*")
+                # st.write("#### Summary")
                 for m in response:
-                    # if j > i:
                     st.markdown(m.content[0].text.value)
-                    # j += 1
-        
+                
+                delete_vectors(client, TMP_FILE_ID, TMP_VECTOR_STORE_ID)
+                                    
         # st.write(response.output_text)
         # st.write(response.output[1].content[0].text)
 
