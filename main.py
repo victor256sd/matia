@@ -152,7 +152,7 @@ if doc_ex:
                         st.markdown(m.content[0].text.value)
                     i += 1
 
-                subject_doc_ex = False
+                submit_doc_ex = False
                 delete_vectors(client, TMP_FILE_ID, TMP_VECTOR_STORE_ID)
 
 if submit_doc_ex_form and not delete_file:                    
