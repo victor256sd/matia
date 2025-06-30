@@ -166,7 +166,10 @@ if doc_ex:
             
                 submit_doc_ex_form = False
                 delete_vectors(client, TMP_FILE_ID, TMP_VECTOR_STORE_ID)
-                                            
+
+            if delete_file:
+                delete_vectors(client, TMP_FILE_ID, TMP_VECTOR_STORE_ID)
+
                 # st.write(response.output_text)
                 # st.write(response.output[1].content[0].text)
 
