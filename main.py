@@ -126,7 +126,7 @@ if doc_ex:
     
         # Form input and query
         with st.form("doc_form", clear_on_submit=False):
-            col1, col2, col3, col4, col5, col6, col7, col8, col9, col10, col11, col12, col13, col14, col15, col16 = st.columns(16)
+            col1, col2, col3, col4, col5, col6, col7, col8 = st.columns(8)
             with col1:
                 submit_doc_ex = st.form_submit_button("Submit File", on_click=disable_button)
             with col2:
