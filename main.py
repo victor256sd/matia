@@ -155,7 +155,7 @@ if doc_ex:
                 submit_doc_ex = False
                 delete_vectors(client, TMP_FILE_ID, TMP_VECTOR_STORE_ID)
 
-            if submit_doc_ex_form and not delete_file:                    
+            if submit_doc_ex_form:                    
                 with st.spinner('Calculating...'):
                     (response, TMP_FILE_ID, TMP_VECTOR_STORE_ID, client, run, thread) = generate_response("temp.txt", openai_api_key, model, query_doc_ex)
             
