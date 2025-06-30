@@ -149,22 +149,23 @@ if doc_ex:
                         st.markdown(m.content[0].text.value)
                     i += 1
 
+                subject_doc_ex = False
                 delete_vectors(client, TMP_FILE_ID, TMP_VECTOR_STORE_ID)
 
-        if submit_doc_ex and doc_ex and not delete_file:        
-            if submit_doc_ex_form:                    
-                with st.spinner('Calculating...'):
-                    (response, TMP_FILE_ID, TMP_VECTOR_STORE_ID, client, run, thread) = generate_response("temp.txt", openai_api_key, model, query_doc_ex)
+if submit_doc_ex_form and not delete_file:                    
+    with st.spinner('Calculating...'):
+        (response, TMP_FILE_ID, TMP_VECTOR_STORE_ID, client, run, thread) = generate_response("temp.txt", openai_api_key, model, query_doc_ex)
 
-                st.write("*Matia is an AI-driven platform designed to review and analyze documents. The system continues to be refined. Users should review the original file and verify the summary for reliability and relevance.*")
-                # st.write("#### Summary")
-                for m in response:
-                    st.markdown(m.content[0].text.value)
-                
-                delete_vectors(client, TMP_FILE_ID, TMP_VECTOR_STORE_ID)
-                                    
-        # st.write(response.output_text)
-        # st.write(response.output[1].content[0].text)
+    st.write("*Matia is an AI-driven platform designed to review and analyze documents. The system continues to be refined. Users should review the original file and verify the summary for reliability and relevance.*")
+    # st.write("#### Summary")
+    for m in response:
+        st.markdown(m.content[0].text.value)
+
+    submit_doc_ex_form = False
+    delete_vectors(client, TMP_FILE_ID, TMP_VECTOR_STORE_ID)
+                                
+    # st.write(response.output_text)
+    # st.write(response.output[1].content[0].text)
 
 if not openai_api_key:
     st.error("Please enter your OpenAI API key!")
