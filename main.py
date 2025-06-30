@@ -20,7 +20,7 @@ def wait_on_run(client, run, thread):
 def get_response(client, thread):
     return client.beta.threads.messages.list(thread_id=thread.id, order="asc")
 
-def generate_response(filename, openai_api_key, model, query_text):    
+def generate_response(filename, openai_api_key, model, assistant_id, query_text):    
     # Load document if file is uploaded
     if filename is not None:
         client = OpenAI(api_key=openai_api_key)
@@ -49,7 +49,7 @@ def generate_response(filename, openai_api_key, model, query_text):
 
         # Update Assistant
         assistant = client.beta.assistants.update(
-            MATH_ASSISTANT_ID,
+            assistant_id,
             tools=[{"type": "file_search"}],
             tool_resources={
                 "file_search":{
@@ -60,43 +60,7 @@ def generate_response(filename, openai_api_key, model, query_text):
 
         run = client.beta.threads.runs.create(
             thread_id=thread.id,
-            assistant_id=assistant.id,
-        )
-
-        run = wait_on_run(client, run, thread)
-        messages = get_response(client, thread)
-        
-    return messages, TMP_FILE_ID, TMP_VECTOR_STORE_ID, client, run, thread
-
-def generate_response_noassist(filename, openai_api_key, model, query_text):    
-    # Load document if file is uploaded
-    if filename is not None:
-        client = OpenAI(api_key=openai_api_key)
-        thread = client.beta.threads.create()
-
-        client.beta.threads.messages.create(
-            thread_id=thread.id, role="user", content=query_text
-        )
-        
-        file = client.files.create(
-            file=open(filename, "rb"),
-            purpose="user_data"
-        )
-
-        vector_store = client.vector_stores.create(
-            name="matia"
-        )
-        
-        TMP_VECTOR_STORE_ID = str(vector_store.id)
-        TMP_FILE_ID = str(file.id)
-                        
-        batch_add = client.vector_stores.file_batches.create(
-            vector_store_id=TMP_VECTOR_STORE_ID,
-            file_ids=[TMP_FILE_ID]
-        )
-
-        run = client.beta.threads.runs.create(
-            thread_id=thread.id
+            assistant_id=assistant_id,
         )
 
         run = wait_on_run(client, run, thread)
@@ -122,6 +86,7 @@ def disable_button():
 MODEL_LIST = ["gpt-4.1-nano", "gpt-4o-mini", "gpt-4.1", "o4-mini"]
 VECTOR_STORE_ID = "vs_6858ab8cb9e881919572b5b2f09669df"
 MATH_ASSISTANT_ID = "asst_CE2FhokCAd4uD9uQhybDGFoX"
+MATH_ASSISTANT2_ID = "asst_2HAOmooNuVwzzBlN3Kg39e5W"
 
 st.set_page_config(page_title="matia1", page_icon="📖", layout="wide")
 st.header("matia1")
@@ -178,7 +143,7 @@ if doc_ex:
                 query_text = "I need your help analyzing the document temp.txt."
                 
                 with st.spinner('Calculating...'):
-                    (response, TMP_FILE_ID, TMP_VECTOR_STORE_ID, client, run, thread) = generate_response("temp.txt", openai_api_key, model, query_text)
+                    (response, TMP_FILE_ID, TMP_VECTOR_STORE_ID, client, run, thread) = generate_response("temp.txt", openai_api_key, model, MATH_ASSISTANT_ID, query_text)
                 
                 st.write("*Matia is an AI-driven platform designed to review and analyze documents. The system continues to be refined. Users should review the original file and verify the summary for reliability and relevance.*")
                 st.write("#### Summary")
@@ -193,7 +158,7 @@ if doc_ex:
 
             if submit_doc_ex_form:                    
                 with st.spinner('Calculating...'):
-                    (response, TMP_FILE_ID, TMP_VECTOR_STORE_ID, client, run, thread) = generate_response_noassist("temp.txt", openai_api_key, model, query_doc_ex)
+                    (response, TMP_FILE_ID, TMP_VECTOR_STORE_ID, client, run, thread) = generate_response("temp.txt", openai_api_key, model, MATH_ASSISTANT2_ID, query_doc_ex)
             
                 st.write("*Matia is an AI-driven platform designed to review and analyze documents. The system continues to be refined. Users should review the original file and verify the summary for reliability and relevance.*")
                 # st.write("#### Summary")
