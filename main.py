@@ -128,6 +128,8 @@ if doc_ex:
         with st.form("doc_form", clear_on_submit=False):
             submit_doc_ex = st.form_submit_button("Submit File", on_click=disable_button)
             delete_file = st.form_submit_button("Delete Vectors", on_click=disable_button)
+            query_doc_ex = st.text_area("**Document Examination**")
+            submit_doc_ex_form = st.form_submit_button("Doc-Ex Submit")
             
             if not openai_api_key:
                 st.error("Please enter your OpenAI API key!")
@@ -150,32 +152,28 @@ if doc_ex:
                 if doc_ex and delete_file:
                     delete_vectors(client, TMP_FILE_ID, TMP_VECTOR_STORE_ID)
 
-        if submit_doc_ex and doc_ex and not delete_file:
-            with st.form(key="doc_ex_form", clear_on_submit=False):
-                query_doc_ex = st.text_area("**Document Examination**")
-                submit_doc_ex_form = st.form_submit_button("Doc-Ex Submit")
-        
-                if submit_doc_ex_form:                    
-                    client.beta.threads.messages.create(
-                        thread_id=thread.id, role="user", content=query_doc_ex
-                    )
-                    client.beta.threads.runs.create(
-                        thread_id=thread.id,
-                        assistant_id=MATH_ASSISTANT_ID,
-                    )
-                    run = wait_on_run(client, run, thread)
+        if submit_doc_ex and doc_ex and not delete_file:        
+            if submit_doc_ex_form:                    
+                client.beta.threads.messages.create(
+                    thread_id=thread.id, role="user", content=query_doc_ex
+                )
+                client.beta.threads.runs.create(
+                    thread_id=thread.id,
+                    assistant_id=MATH_ASSISTANT_ID,
+                )
+                run = wait_on_run(client, run, thread)
 
-                    st.write("Completed doc-ex run...")
-                    
-                    response = get_response(client, thread)
+                st.write("Completed doc-ex run...")
+                
+                response = get_response(client, thread)
 
-                    st.write("Obtained doc-ex response...")
-                    
-                    # j = i
-                    for m in response:
-                        # if j > i:
-                        st.markdown(m.content[0].text.value)
-                        # j += 1
+                st.write("Obtained doc-ex response...")
+                
+                # j = i
+                for m in response:
+                    # if j > i:
+                    st.markdown(m.content[0].text.value)
+                    # j += 1
         
         # st.write(response.output_text)
         # st.write(response.output[1].content[0].text)
