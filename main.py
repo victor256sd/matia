@@ -68,6 +68,41 @@ def generate_response(filename, openai_api_key, model, assistant_id, query_text)
         
     return messages, TMP_FILE_ID, TMP_VECTOR_STORE_ID, client, run, thread
 
+def generate_response_noassist(filename, openai_api_key, model, query_text):    
+    # Load document if file is uploaded
+    if filename is not None:
+        client = OpenAI(api_key=openai_api_key)
+        thread = client.beta.threads.create()
+        
+        file = client.files.create(
+            file=open(filename, "rb"),
+            purpose="user_data"
+        )
+
+        vector_store = client.vector_stores.create(
+            name="matia"
+        )
+        
+        TMP_VECTOR_STORE_ID = str(vector_store.id)
+        TMP_FILE_ID = str(file.id)
+                        
+        batch_add = client.vector_stores.file_batches.create(
+            vector_store_id=TMP_VECTOR_STORE_ID,
+            file_ids=[TMP_FILE_ID]
+        )
+
+        messages = client.responses.create(
+            input = query_text,
+            model = model,
+            temperature = 1,
+            tools = [{
+                "type": "file_search",
+                "vector_store_ids": [TMP_VECTOR_STORE_ID],
+            }]
+        )
+        
+    return messages, TMP_FILE_ID, TMP_VECTOR_STORE_ID, client
+
 def delete_vectors(client, TMP_FILE_ID, TMP_VECTOR_STORE_ID):
     # Delete the file and vector store
     deleted_vector_store_file = client.vector_stores.files.delete(
@@ -158,7 +193,7 @@ if doc_ex:
 
             if submit_doc_ex_form:                    
                 with st.spinner('Calculating...'):
-                    (response, TMP_FILE_ID, TMP_VECTOR_STORE_ID, client, run, thread) = generate_response("temp.txt", openai_api_key, model, MATH_ASSISTANT2_ID, query_doc_ex)
+                    (response, TMP_FILE_ID, TMP_VECTOR_STORE_ID, client) = generate_response_noassist("temp.txt", openai_api_key, model, query_doc_ex)
             
                 st.write("*Matia is an AI-driven platform designed to review and analyze documents. The system continues to be refined. Users should review the original file and verify the summary for reliability and relevance.*")
                 # st.write("#### Summary")
