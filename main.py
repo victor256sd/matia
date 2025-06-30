@@ -126,11 +126,11 @@ if doc_ex:
     
         # Form input and query
         with st.form("doc_form", clear_on_submit=False):
-            col1, col2, col3, col4, col5, col6 = st.columns(6)
-            with col1:
-                submit_doc_ex = st.form_submit_button("Submit File", on_click=disable_button)
-            with col2:
-                delete_file = st.form_submit_button("Delete Vectors", on_click=disable_button)
+            # col1, col2, col3, col4, col5, col6 = st.columns(6)
+            # with col1:
+            submit_doc_ex = st.form_submit_button("Submit File", on_click=disable_button)
+            # with col2:
+            #     delete_file = st.form_submit_button("Delete Vectors", on_click=disable_button)
             query_doc_ex = st.text_area("**Document Examination**")
             submit_doc_ex_form = st.form_submit_button("Doc-Ex Submit")
             
@@ -167,8 +167,8 @@ if doc_ex:
                 submit_doc_ex_form = False
                 delete_vectors(client, TMP_FILE_ID, TMP_VECTOR_STORE_ID)
 
-            if delete_file:
-                delete_vectors(client, TMP_FILE_ID, TMP_VECTOR_STORE_ID)
+            # if delete_file:
+            #     delete_vectors(client, TMP_FILE_ID, TMP_VECTOR_STORE_ID)
 
                 # st.write(response.output_text)
                 # st.write(response.output[1].content[0].text)
