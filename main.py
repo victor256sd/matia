@@ -8,6 +8,7 @@ import tiktoken
 import json
 import time
 
+# Wait until run process completion.
 def wait_on_run(client, run, thread):
     while run.status == "queued" or run.status == "in_progress":
         run = client.beta.threads.runs.retrieve(
@@ -17,9 +18,13 @@ def wait_on_run(client, run, thread):
         time.sleep(0.5)
     return run
 
+# Retrieve messages from the thread, including message added by the assistant.
 def get_response(client, thread):
     return client.beta.threads.messages.list(thread_id=thread.id, order="asc")
 
+# Start client, thread, create file and add it to the openai vector store, update an
+# existing openai assistant with the new vector store, create a run to have the 
+# assistant process the vector store.
 def generate_response(filename, openai_api_key, model, assistant_id, query_text):    
     # Load document if file is uploaded
     if filename is not None:
