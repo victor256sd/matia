@@ -112,17 +112,18 @@ def generate_response_noassist(filename, openai_api_key, model, query_text):
         )        
     return messages, TMP_FILE_ID, TMP_VECTOR_STORE_ID, client
 
+# Delete file in openai storage and the vector store.
 def delete_vectors(client, TMP_FILE_ID, TMP_VECTOR_STORE_ID):
     # Delete the file and vector store
     deleted_vector_store_file = client.vector_stores.files.delete(
         vector_store_id=TMP_VECTOR_STORE_ID,
         file_id=TMP_FILE_ID
     )
-
     deleted_vector_store = client.vector_stores.delete(
         vector_store_id=TMP_VECTOR_STORE_ID
     )
 
+# Disable the button called via on_click attribute.
 def disable_button():
     st.session_state.disabled = True        
 
