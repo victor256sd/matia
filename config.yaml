@@ -3,11 +3,11 @@ credentials:
     jsmith:
       email: jsmith@gmail.com
       name: John Smith
-      password: abc # To be replaced with hashed password
+      password: $2b$12$V2Vo5pFTrUUSQZXLeXI1y.JT4F0OJC2/XOLkwbrPtuVTx8/7WwJiW
     rbriggs:
       email: rbriggs@gmail.com
       name: Rebecca Briggs
-      password: def # To be replaced with hashed password
+      password: $2b$12$ie.epLr9fxvRH2K/jdoYIOn6s8SyaAUKQK8AZuPHk1BGFs8Ta.7XW
 cookie:
   expiry_days: 30
   key: random_signature_key # Must be string
