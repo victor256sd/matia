@@ -45,7 +45,7 @@ def generate_response(filename, openai_api_key, model, assistant_id, query_text)
         )
         # Create vector store for processing by assistant.
         vector_store = client.vector_stores.create(
-            name="matia"
+            name="aitam"
         )
         # Obtain vector store and file ids.
         TMP_VECTOR_STORE_ID = str(vector_store.id)
@@ -93,7 +93,7 @@ def generate_response_noassist(filename, openai_api_key, model, query_text):
         )
         # Create vector store for processing by assistant.
         vector_store = client.vector_stores.create(
-            name="matia"
+            name="aitam"
         )
         # Obtain vector store and file ids.        
         TMP_VECTOR_STORE_ID = str(vector_store.id)
@@ -142,10 +142,10 @@ authenticator = stauth.Authenticate(
 # Call user login form.
 result_auth = authenticator.login("main")
     
-# If login successful, continue to matia page.
+# If login successful, continue to aitam page.
 if st.session_state.get('authentication_status'):
     authenticator.logout('Logout', 'main')
-    st.write(f'Welcome *{st.session_state.get('name')}*')
+    st.write(f'Welcome *{st.session_state.get('name')}*!')
 
     # Model list, Vector store ID, assistant IDs (one for initial upload eval, 
     # the second for follow-up user questions).
@@ -155,8 +155,8 @@ if st.session_state.get('authentication_status'):
     MATH_ASSISTANT2_ID = st.secrets["MATH_ASSISTANT2_ID"]
     
     # Set page layout and title.
-    st.set_page_config(page_title="matia1", page_icon="📖", layout="wide")
-    st.header("matia1")
+    st.set_page_config(page_title="aitam1", page_icon="📖", layout="wide")
+    st.header("aitam1")
     
     # Field for OpenAI API key.
     api_key_input = st.text_input(
@@ -201,7 +201,7 @@ if st.session_state.get('authentication_status'):
                 st.stop()    
             # Form input and query
             with st.form("doc_form", clear_on_submit=False):
-                # Create form to process file with the matia assistant and be able to ask specific
+                # Create form to process file with the aitam assistant and be able to ask specific
                 # questions about the file.
                 submit_doc_ex = st.form_submit_button("Standard Examination", on_click=disable_button)
                 query_doc_ex = st.text_area("**Custom Queries**")
@@ -210,7 +210,7 @@ if st.session_state.get('authentication_status'):
                 if not openai_api_key:
                     st.error("Please enter your OpenAI API key!")
                     st.stop()
-                # Conduct standard matia eval on the file.
+                # Conduct standard aitam eval on the file.
                 if submit_doc_ex and doc_ex:
                     query_text = "I need your help analyzing the document temp.txt."
                     # Call function to copy file to openai storage, create vector store, and use an 
@@ -218,14 +218,14 @@ if st.session_state.get('authentication_status'):
                     with st.spinner('Calculating...'):
                         (response, TMP_FILE_ID, TMP_VECTOR_STORE_ID, client, run, thread) = generate_response("temp.txt", openai_api_key, model, MATH_ASSISTANT_ID, query_text)
                     # Write disclaimer and response from assistant eval of file.
-                    st.write("*Matia is an AI-driven platform designed to review and analyze documents. The system continues to be refined. Users should review the original file and verify the summary for reliability and relevance.*")
+                    st.write("*aitam is an AI-driven platform designed to review and analyze documents. The system continues to be refined. Users should review the original file and verify the summary for reliability and relevance.*")
                     st.write("#### Summary")
                     i = 0
                     for m in response:
                         if i > 0:
                             st.markdown(m.content[0].text.value)
                         i += 1
-                    # Reset the button state for standard matia file eval, and 
+                    # Reset the button state for standard aitam file eval, and 
                     # delete the file from openai storage and the associated
                     # vector store.
                     submit_doc_ex = False
@@ -237,10 +237,10 @@ if st.session_state.get('authentication_status'):
                     with st.spinner('Calculating...'):
                         (response, TMP_FILE_ID, TMP_VECTOR_STORE_ID, client) = generate_response_noassist("temp.txt", openai_api_key, model, query_doc_ex)
                     # Write disclaimer and response from assistant eval of file.            
-                    st.write("*Matia is an AI-driven platform designed to review and analyze documents. The system continues to be refined. Users should review the original file and verify the summary for reliability and relevance.*")
+                    st.write("*aitam is an AI-driven platform designed to review and analyze documents. The system continues to be refined. Users should review the original file and verify the summary for reliability and relevance.*")
                     for m in response:
                         st.markdown(m.content[0].text.value)
-                    # Reset the button state for the custom matia file eval, and 
+                    # Reset the button state for the custom aitam file eval, and 
                     # delete the file from openai storage and the associated
                     # vector store.            
                     submit_doc_ex_form = False
@@ -251,11 +251,11 @@ if st.session_state.get('authentication_status'):
         st.error("Please enter your OpenAI API key!")
         st.stop()
     
-    # Create new form to search matia library vector store.    
+    # Create new form to search aitam library vector store.    
     with st.form(key="qa_form", clear_on_submit=False):
         query = st.text_area("**Search Library Holdings**")
         submit = st.form_submit_button("Search")
-    # If submit button is clicked, query the matia library.            
+    # If submit button is clicked, query the aitam library.            
     if submit:
         # If form is submitted without a query, stop.
         if not query:
@@ -265,7 +265,7 @@ if st.session_state.get('authentication_status'):
         answer_col, sources_col = st.columns(2)
         # Create new client for this submission.
         client2 = OpenAI(api_key=openai_api_key)
-        # Query the matia library vector store and include internet
+        # Query the aitam library vector store and include internet
         # serach results.
         with st.spinner('Calculating...'):
             response2 = client2.responses.create(
