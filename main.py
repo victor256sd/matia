@@ -131,7 +131,7 @@ def disable_button():
     st.session_state.disabled = True        
 
 # Load config file with user credentials.
-with open('../config.yaml') as file:
+with open("config.yaml") as file:
     config = yaml.load(file, Loader=SafeLoader)
 
 # Initiate authentication.
