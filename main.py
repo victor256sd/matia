@@ -152,157 +152,157 @@ if result_auth is None:
 else:
     name, authentication_status, username = result_auth
     
-# If login successful, continue to matia page.
-if authentication_status:
-    authenticator.logout('Logout', 'main')
-    st.write(f'Welcome *{name}*')
-
-    # Model list, Vector store ID, assistant IDs (one for initial upload eval, 
-    # the second for follow-up user questions).
-    MODEL_LIST = ["gpt-4.1-nano", "gpt-4o-mini", "gpt-4.1", "o4-mini"]
-    VECTOR_STORE_ID = st.secrets["VECTOR_STORE_ID"]
-    MATH_ASSISTANT_ID = st.secrets["MATH_ASSISTANT_ID"]
-    MATH_ASSISTANT2_ID = st.secrets["MATH_ASSISTANT2_ID"]
+    # If login successful, continue to matia page.
+    if authentication_status:
+        authenticator.logout('Logout', 'main')
+        st.write(f'Welcome *{name}*')
     
-    # Set page layout and title.
-    st.set_page_config(page_title="matia1", page_icon="📖", layout="wide")
-    st.header("matia1")
-    
-    # Field for OpenAI API key.
-    api_key_input = st.text_input(
-            "OpenAI API Key",
-            type="password",
-            placeholder="Paste your OpenAI API key here (sk-...)",
-            help="You can get your API key from https://platform.openai.com/account/api-keys.",  # noqa: E501
-            value=os.environ.get("OPENAI_API_KEY", None) or st.session_state.get("OPENAI_API_KEY", "")
-        )
-    # Save the API key to the st session.
-    st.session_state["OPENAI_API_KEY"] = api_key_input
-    openai_api_key = st.session_state.get("OPENAI_API_KEY")
-    
-    # Retrieve user-selected openai model.
-    model: str = st.selectbox("Model", options=MODEL_LIST)
-    
-    # Create advanced options dropdown with upload file option.
-    with st.expander("Advanced Options"):
-        doc_ex = st.checkbox("Upload Excel file for examination")
-    
-    # If the option to upload a document was selected, allow for an upload and then 
-    # process it.
-    if doc_ex:
-        # File uploader for Excel files
-        uploaded_file = st.file_uploader("Choose an Excel file", type=["xlsx"], key="uploaded_file")
-        # If a file is uploaded, extract the text and write serialized information to a text file, 
-        # give options for further processing, and run assistant to process the information.
-        if uploaded_file:
-            # Read file, for each row combine column information, create json string, and
-            # serialize the data for later processing by the openai model.
-            df = pd.read_excel(uploaded_file, engine='openpyxl')
-            df['combined_text'] = df.apply(lambda row: ' '.join(row.values.astype(str)), axis=1)
-            json_string = df.to_json(path_or_buf=None)
-            serialized_data = json.dumps(json_string, indent=4)
-            # Write serialized data to a text file.
-            with open("temp.txt", "w") as file:
-                file.write(serialized_data)
-            file.close()
-            # If there's no openai api key, stop.
-            if not openai_api_key:
-                st.error("Please enter your OpenAI API key!")
-                st.stop()    
-            # Form input and query
-            with st.form("doc_form", clear_on_submit=False):
-                # Create form to process file with the matia assistant and be able to ask specific
-                # questions about the file.
-                submit_doc_ex = st.form_submit_button("Standard Examination", on_click=disable_button)
-                query_doc_ex = st.text_area("**Custom Queries**")
-                submit_doc_ex_form = st.form_submit_button("Submit Query")
+        # Model list, Vector store ID, assistant IDs (one for initial upload eval, 
+        # the second for follow-up user questions).
+        MODEL_LIST = ["gpt-4.1-nano", "gpt-4o-mini", "gpt-4.1", "o4-mini"]
+        VECTOR_STORE_ID = st.secrets["VECTOR_STORE_ID"]
+        MATH_ASSISTANT_ID = st.secrets["MATH_ASSISTANT_ID"]
+        MATH_ASSISTANT2_ID = st.secrets["MATH_ASSISTANT2_ID"]
+        
+        # Set page layout and title.
+        st.set_page_config(page_title="matia1", page_icon="📖", layout="wide")
+        st.header("matia1")
+        
+        # Field for OpenAI API key.
+        api_key_input = st.text_input(
+                "OpenAI API Key",
+                type="password",
+                placeholder="Paste your OpenAI API key here (sk-...)",
+                help="You can get your API key from https://platform.openai.com/account/api-keys.",  # noqa: E501
+                value=os.environ.get("OPENAI_API_KEY", None) or st.session_state.get("OPENAI_API_KEY", "")
+            )
+        # Save the API key to the st session.
+        st.session_state["OPENAI_API_KEY"] = api_key_input
+        openai_api_key = st.session_state.get("OPENAI_API_KEY")
+        
+        # Retrieve user-selected openai model.
+        model: str = st.selectbox("Model", options=MODEL_LIST)
+        
+        # Create advanced options dropdown with upload file option.
+        with st.expander("Advanced Options"):
+            doc_ex = st.checkbox("Upload Excel file for examination")
+        
+        # If the option to upload a document was selected, allow for an upload and then 
+        # process it.
+        if doc_ex:
+            # File uploader for Excel files
+            uploaded_file = st.file_uploader("Choose an Excel file", type=["xlsx"], key="uploaded_file")
+            # If a file is uploaded, extract the text and write serialized information to a text file, 
+            # give options for further processing, and run assistant to process the information.
+            if uploaded_file:
+                # Read file, for each row combine column information, create json string, and
+                # serialize the data for later processing by the openai model.
+                df = pd.read_excel(uploaded_file, engine='openpyxl')
+                df['combined_text'] = df.apply(lambda row: ' '.join(row.values.astype(str)), axis=1)
+                json_string = df.to_json(path_or_buf=None)
+                serialized_data = json.dumps(json_string, indent=4)
+                # Write serialized data to a text file.
+                with open("temp.txt", "w") as file:
+                    file.write(serialized_data)
+                file.close()
                 # If there's no openai api key, stop.
                 if not openai_api_key:
                     st.error("Please enter your OpenAI API key!")
-                    st.stop()
-                # Conduct standard matia eval on the file.
-                if submit_doc_ex and doc_ex:
-                    query_text = "I need your help analyzing the document temp.txt."
-                    # Call function to copy file to openai storage, create vector store, and use an 
-                    # assistant to eval the file.
-                    with st.spinner('Calculating...'):
-                        (response, TMP_FILE_ID, TMP_VECTOR_STORE_ID, client, run, thread) = generate_response("temp.txt", openai_api_key, model, MATH_ASSISTANT_ID, query_text)
-                    # Write disclaimer and response from assistant eval of file.
-                    st.write("*Matia is an AI-driven platform designed to review and analyze documents. The system continues to be refined. Users should review the original file and verify the summary for reliability and relevance.*")
-                    st.write("#### Summary")
-                    i = 0
-                    for m in response:
-                        if i > 0:
+                    st.stop()    
+                # Form input and query
+                with st.form("doc_form", clear_on_submit=False):
+                    # Create form to process file with the matia assistant and be able to ask specific
+                    # questions about the file.
+                    submit_doc_ex = st.form_submit_button("Standard Examination", on_click=disable_button)
+                    query_doc_ex = st.text_area("**Custom Queries**")
+                    submit_doc_ex_form = st.form_submit_button("Submit Query")
+                    # If there's no openai api key, stop.
+                    if not openai_api_key:
+                        st.error("Please enter your OpenAI API key!")
+                        st.stop()
+                    # Conduct standard matia eval on the file.
+                    if submit_doc_ex and doc_ex:
+                        query_text = "I need your help analyzing the document temp.txt."
+                        # Call function to copy file to openai storage, create vector store, and use an 
+                        # assistant to eval the file.
+                        with st.spinner('Calculating...'):
+                            (response, TMP_FILE_ID, TMP_VECTOR_STORE_ID, client, run, thread) = generate_response("temp.txt", openai_api_key, model, MATH_ASSISTANT_ID, query_text)
+                        # Write disclaimer and response from assistant eval of file.
+                        st.write("*Matia is an AI-driven platform designed to review and analyze documents. The system continues to be refined. Users should review the original file and verify the summary for reliability and relevance.*")
+                        st.write("#### Summary")
+                        i = 0
+                        for m in response:
+                            if i > 0:
+                                st.markdown(m.content[0].text.value)
+                            i += 1
+                        # Reset the button state for standard matia file eval, and 
+                        # delete the file from openai storage and the associated
+                        # vector store.
+                        submit_doc_ex = False
+                        delete_vectors(client, TMP_FILE_ID, TMP_VECTOR_STORE_ID)
+                    # If the user provides a custom query for the file and submits it, 
+                    # call different function to use a different assistant to run the 
+                    # query on the file.
+                    if submit_doc_ex_form:                    
+                        with st.spinner('Calculating...'):
+                            (response, TMP_FILE_ID, TMP_VECTOR_STORE_ID, client) = generate_response_noassist("temp.txt", openai_api_key, model, query_doc_ex)
+                        # Write disclaimer and response from assistant eval of file.            
+                        st.write("*Matia is an AI-driven platform designed to review and analyze documents. The system continues to be refined. Users should review the original file and verify the summary for reliability and relevance.*")
+                        for m in response:
                             st.markdown(m.content[0].text.value)
-                        i += 1
-                    # Reset the button state for standard matia file eval, and 
-                    # delete the file from openai storage and the associated
-                    # vector store.
-                    submit_doc_ex = False
-                    delete_vectors(client, TMP_FILE_ID, TMP_VECTOR_STORE_ID)
-                # If the user provides a custom query for the file and submits it, 
-                # call different function to use a different assistant to run the 
-                # query on the file.
-                if submit_doc_ex_form:                    
-                    with st.spinner('Calculating...'):
-                        (response, TMP_FILE_ID, TMP_VECTOR_STORE_ID, client) = generate_response_noassist("temp.txt", openai_api_key, model, query_doc_ex)
-                    # Write disclaimer and response from assistant eval of file.            
-                    st.write("*Matia is an AI-driven platform designed to review and analyze documents. The system continues to be refined. Users should review the original file and verify the summary for reliability and relevance.*")
-                    for m in response:
-                        st.markdown(m.content[0].text.value)
-                    # Reset the button state for the custom matia file eval, and 
-                    # delete the file from openai storage and the associated
-                    # vector store.            
-                    submit_doc_ex_form = False
-                    delete_vectors(client, TMP_FILE_ID, TMP_VECTOR_STORE_ID)
+                        # Reset the button state for the custom matia file eval, and 
+                        # delete the file from openai storage and the associated
+                        # vector store.            
+                        submit_doc_ex_form = False
+                        delete_vectors(client, TMP_FILE_ID, TMP_VECTOR_STORE_ID)
+        
+        # If there's no openai api key, stop.
+        if not openai_api_key:
+            st.error("Please enter your OpenAI API key!")
+            st.stop()
+        
+        # Create new form to search matia library vector store.    
+        with st.form(key="qa_form", clear_on_submit=False):
+            query = st.text_area("**Search Library Holdings**")
+            submit = st.form_submit_button("Search")
+        # If submit button is clicked, query the matia library.            
+        if submit:
+            # If form is submitted without a query, stop.
+            if not query:
+                st.error("Enter a question to search the library!")
+                st.stop()            
+            # Setup output columns to display results.
+            answer_col, sources_col = st.columns(2)
+            # Create new client for this submission.
+            client2 = OpenAI(api_key=openai_api_key)
+            # Query the matia library vector store and include internet
+            # serach results.
+            with st.spinner('Calculating...'):
+                response2 = client2.responses.create(
+                    input = query,
+                    model = model,
+                    temperature = 0.3,
+                    tools = [{
+                                "type": "file_search",
+                                "vector_store_ids": [VECTOR_STORE_ID],
+                    }],
+                    include=["output[*].file_search_call.search_results"]
+                )
+            # Write response to the answer column.    
+            with answer_col:
+                st.markdown("#### Response")
+                st.markdown(response2.output[1].content[0].text)
+            # Write files used to generate the answer.
+            with sources_col:
+                st.markdown("#### Sources")
+                # Extract annotations from the response
+                annotations = response2.output[1].content[0].annotations
+                # Get top-k retrieved filenames
+                retrieved_files = set([response2.filename for response2 in annotations])   
+                st.markdown(retrieved_files)    
     
-    # If there's no openai api key, stop.
-    if not openai_api_key:
-        st.error("Please enter your OpenAI API key!")
-        st.stop()
+    elif authentication_status == False:
+        st.error('Username/password is incorrect')
     
-    # Create new form to search matia library vector store.    
-    with st.form(key="qa_form", clear_on_submit=False):
-        query = st.text_area("**Search Library Holdings**")
-        submit = st.form_submit_button("Search")
-    # If submit button is clicked, query the matia library.            
-    if submit:
-        # If form is submitted without a query, stop.
-        if not query:
-            st.error("Enter a question to search the library!")
-            st.stop()            
-        # Setup output columns to display results.
-        answer_col, sources_col = st.columns(2)
-        # Create new client for this submission.
-        client2 = OpenAI(api_key=openai_api_key)
-        # Query the matia library vector store and include internet
-        # serach results.
-        with st.spinner('Calculating...'):
-            response2 = client2.responses.create(
-                input = query,
-                model = model,
-                temperature = 0.3,
-                tools = [{
-                            "type": "file_search",
-                            "vector_store_ids": [VECTOR_STORE_ID],
-                }],
-                include=["output[*].file_search_call.search_results"]
-            )
-        # Write response to the answer column.    
-        with answer_col:
-            st.markdown("#### Response")
-            st.markdown(response2.output[1].content[0].text)
-        # Write files used to generate the answer.
-        with sources_col:
-            st.markdown("#### Sources")
-            # Extract annotations from the response
-            annotations = response2.output[1].content[0].annotations
-            # Get top-k retrieved filenames
-            retrieved_files = set([response2.filename for response2 in annotations])   
-            st.markdown(retrieved_files)    
-
-elif authentication_status == False:
-    st.error('Username/password is incorrect')
-
-elif authentication_status == None:
-    st.warning('Please enter your username and password')
+    elif authentication_status == None:
+        st.warning('Please enter your username and password')
