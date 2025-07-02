@@ -301,8 +301,8 @@ if st.session_state.get('authentication_status'):
             retrieved_files = set([response2.filename for response2 in annotations])   
             st.markdown(retrieved_files)    
 
-elif authentication_status == False:
+elif st.session_state.get('authentication_status') is False:
     st.error('Username/password is incorrect')
 
-elif authentication_status == None:
+elif st.session_state.get('authentication_status') is None:
     st.warning('Please enter your username and password')
