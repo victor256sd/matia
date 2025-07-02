@@ -155,8 +155,8 @@ if st.session_state.get('authentication_status'):
     MATH_ASSISTANT2_ID = st.secrets["MATH_ASSISTANT2_ID"]
     
     # Set page layout and title.
-    st.set_page_config(page_title="aitam1", page_icon="📖", layout="wide")
-    st.header("aitam1")
+    st.set_page_config(page_title="aitam0", page_icon="📖", layout="wide")
+    st.header("aitam0")
     
     # Field for OpenAI API key.
     api_key_input = st.text_input(
