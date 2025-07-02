@@ -3,4 +3,5 @@ openpyxl
 pandas
 requests
 streamlit
+streamlit-authenticator
 tiktoken
