@@ -145,14 +145,14 @@ authenticator = stauth.Authenticate(
 
 # Call user login form.
 result_auth = authenticator.login("main","Login")
-
+name, authentication_status, username = result_auth
 # try:
 #     authenticator.login()
 # except Exception as e:
 #     st.error(e)
     
 # If login successful, continue to matia page.
-if result_auth.authentication_status:
+if authentication_status:
     authenticator.logout('Logout', 'main')
     st.write(f'Welcome *{name}*')
 
@@ -300,8 +300,8 @@ if result_auth.authentication_status:
             retrieved_files = set([response2.filename for response2 in annotations])   
             st.markdown(retrieved_files)    
 
-elif result_auth.authentication_status == False:
+elif authentication_status == False:
     st.error('Username/password is incorrect')
 
-elif result_auth.authentication_status == None:
+elif authentication_status == None:
     st.warning('Please enter your username and password')
