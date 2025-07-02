@@ -146,6 +146,8 @@ authenticator = stauth.Authenticate(
 # Call user login form.
 result_auth = authenticator.login("main")
 
+st.write(result_auth)
+
 if result_auth is None:
     # Handle the case when no login data is returned
     st.error("Login failed or no login attempt made.")
