@@ -145,11 +145,12 @@ authenticator = stauth.Authenticate(
 
 # Call user login form.
 result_auth = authenticator.login("main","Login")
-name, authentication_status, username = result_auth
-# try:
-#     authenticator.login()
-# except Exception as e:
-#     st.error(e)
+
+if result_auth is None:
+    # Handle the case when no login data is returned
+    st.error(“Login failed or no login attempt made.”)
+else:
+    name, authentication_status, username = result_auth
     
 # If login successful, continue to matia page.
 if authentication_status:
