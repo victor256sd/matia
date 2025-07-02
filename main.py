@@ -150,8 +150,7 @@ result_auth = authenticator.login("main")
 # If login successful, continue to matia page.
 if st.session_state.get('authentication_status'):
     authenticator.logout('Logout', 'main')
-    name, authentication_status, username = result_auth
-    st.write(f'Welcome *{name}*')
+    st.write(f'Welcome *{st.session_state.get('name')}*')
 
     # Model list, Vector store ID, assistant IDs (one for initial upload eval, 
     # the second for follow-up user questions).
