@@ -144,7 +144,7 @@ authenticator = stauth.Authenticate(
 )
 
 # Call user login form.
-name, authentication_status = authenticator.login('Login')
+name, authentication_status = authenticator.login("main","Login")
 
 # try:
 #     authenticator.login()
