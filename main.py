@@ -145,7 +145,7 @@ result_auth = authenticator.login("main")
 # If login successful, continue to aitam page.
 if st.session_state.get('authentication_status'):
     authenticator.logout('Logout', 'main')
-    st.write(f'Welcome *{st.session_state.get('name')}*!')
+    st.write(f'Welcome *{st.session_state.get('name')}* !')
 
     # Model list, Vector store ID, assistant IDs (one for initial upload eval, 
     # the second for follow-up user questions).
