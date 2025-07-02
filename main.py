@@ -146,15 +146,11 @@ authenticator = stauth.Authenticate(
 # Call user login form.
 result_auth = authenticator.login("main")
 
-# if result_auth is None:
-#     # Handle the case when no login data is returned
-#     st.error("Login failed or no login attempt made.")
-# else:
-#     name, authentication_status, username = result_auth
     
 # If login successful, continue to matia page.
 if st.session_state.get('authentication_status'):
     authenticator.logout('Logout', 'main')
+    name, authentication_status, username = result_auth
     st.write(f'Welcome *{name}*')
 
     # Model list, Vector store ID, assistant IDs (one for initial upload eval, 
