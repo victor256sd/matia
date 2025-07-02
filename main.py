@@ -148,7 +148,7 @@ result_auth = authenticator.login("main","Login")
 
 if result_auth is None:
     # Handle the case when no login data is returned
-    st.error(“Login failed or no login attempt made.”)
+    st.error("Login failed or no login attempt made.")
 else:
     name, authentication_status, username = result_auth
     
