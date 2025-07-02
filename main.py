@@ -144,8 +144,13 @@ authenticator = stauth.Authenticate(
 )
 
 # Call user login form.
-name, authentication_status, username = authenticator.login('Login', 'main')
+name, authentication_status = authenticator.login('Login')
 
+# try:
+#     authenticator.login()
+# except Exception as e:
+#     st.error(e)
+    
 # If login successful, continue to matia page.
 if authentication_status:
     authenticator.logout('Logout', 'main')
