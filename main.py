@@ -147,6 +147,7 @@ authenticator = stauth.Authenticate(
 result_auth = authenticator.login("main")
 
 st.write(result_auth)
+st.stop()
 
 if result_auth is None:
     # Handle the case when no login data is returned
