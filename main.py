@@ -144,7 +144,7 @@ authenticator = stauth.Authenticate(
 )
 
 # Call user login form.
-result_auth = authenticator.login("main","Login")
+result_auth = authenticator.login("main")
 
 if result_auth is None:
     # Handle the case when no login data is returned
