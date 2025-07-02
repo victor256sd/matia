@@ -130,9 +130,9 @@ def disable_button():
 # Model list, Vector store ID, assistant IDs (one for initial upload eval, 
 # the second for follow-up user questions).
 MODEL_LIST = ["gpt-4.1-nano", "gpt-4o-mini", "gpt-4.1", "o4-mini"]
-VECTOR_STORE_ID = "vs_6858ab8cb9e881919572b5b2f09669df"
-MATH_ASSISTANT_ID = "asst_CE2FhokCAd4uD9uQhybDGFoX"
-MATH_ASSISTANT2_ID = "asst_2HAOmooNuVwzzBlN3Kg39e5W"
+VECTOR_STORE_ID = st.secrets["VECTOR_STORE_ID"]
+MATH_ASSISTANT_ID = st.secrets["MATH_ASSISTANT_ID"]
+MATH_ASSISTANT2_ID = st.secrets["MATH_ASSISTANT2_ID"]
 
 # Set page layout and title.
 st.set_page_config(page_title="matia1", page_icon="📖", layout="wide")
