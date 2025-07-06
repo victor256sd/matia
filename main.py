@@ -28,7 +28,7 @@ def get_response(client, thread):
 # Start client, thread, create file and add it to the openai vector store, update an
 # existing openai assistant with the new vector store, create a run to have the 
 # assistant process the vector store.
-def generate_response(filename, openai_api_key, model, assistant_id, query_text):    
+def generate_response(filename, file_stream, openai_api_key, model, assistant_id, query_text):    
     # Check file existence.
     if filename is not None:
         # Start client, thread.
@@ -38,11 +38,12 @@ def generate_response(filename, openai_api_key, model, assistant_id, query_text)
         client.beta.threads.messages.create(
             thread_id=thread.id, role="user", content=query_text
         )
-        # Create file at openai storage from the uploaded file.
-        file = client.files.create(
-            file=open(filename, "rb"),
-            purpose="assistants"
-        )
+        
+        # # Create file at openai storage from the uploaded file.
+        # file = client.files.create(
+        #     file=open(filename, "rb"),
+        #     purpose="assistants"
+        # )
         # Create vector store for processing by assistant.
         vector_store = client.vector_stores.create(
             name="aitam"
@@ -50,11 +51,19 @@ def generate_response(filename, openai_api_key, model, assistant_id, query_text)
         # Obtain vector store and file ids.
         TMP_VECTOR_STORE_ID = str(vector_store.id)
         TMP_FILE_ID = str(file.id)
-        # Add the file to the vector store.
-        batch_add = client.vector_stores.file_batches.create(
-            vector_store_id=TMP_VECTOR_STORE_ID,
-            file_ids=[TMP_FILE_ID]
+        # # Add the file to the vector store.
+        # batch_add = client.vector_stores.file_batches.create(
+        #     vector_store_id=TMP_VECTOR_STORE_ID,
+        #     file_ids=[TMP_FILE_ID]
+        # )
+
+        # NEW
+        # Upload the file and poll for completion using the named file stream
+        file_batch = client.beta.vector_stores.file_batches.upload_and_poll(
+            vector_store_id=TMP_VECTOR_STORE_ID, 
+            files=[file_stream]  # Pass the file_stream in a list
         )
+        
         # Update Assistant, pointed to the vector store.
         assistant = client.beta.assistants.update(
             assistant_id,
@@ -188,7 +197,12 @@ if st.session_state.get('authentication_status'):
             # Read file, for each row combine column information, create json string, and
             # serialize the data for later processing by the openai model.
             df = pd.read_excel(uploaded_file, engine='openpyxl')
+            # NEW
             df.to_excel(uploaded_file.name, index=False)
+            # To read file as bytes and create a NamedBytesIO object with the original file name
+            bytes_data = uploaded_file.getvalue()
+            file_stream = NamedBytesIO(bytes_data, uploaded_file.name)
+
             df['combined_text'] = df.apply(lambda row: ' '.join(row.values.astype(str)), axis=1)
             json_string = df.to_json(path_or_buf=None)
             serialized_data = json.dumps(json_string, indent=4)
@@ -217,7 +231,7 @@ if st.session_state.get('authentication_status'):
                     # Call function to copy file to openai storage, create vector store, and use an 
                     # assistant to eval the file.
                     with st.spinner('Calculating...'):
-                        (response, TMP_FILE_ID, TMP_VECTOR_STORE_ID, client, run, thread) = generate_response(uploaded_file.name, openai_api_key, model, MATH_ASSISTANT_ID, query_text)
+                        (response, TMP_FILE_ID, TMP_VECTOR_STORE_ID, client, run, thread) = generate_response(uploaded_file.name, file_stream, openai_api_key, model, MATH_ASSISTANT_ID, query_text)
                         # (response, TMP_FILE_ID, TMP_VECTOR_STORE_ID, client, run, thread) = generate_response("temp.txt", openai_api_key, model, MATH_ASSISTANT_ID, query_text)
                     # Write disclaimer and response from assistant eval of file.
                     st.write("*aitam is an AI-driven platform designed to review and analyze documents. The system continues to be refined. Users should review the original file and verify the summary for reliability and relevance.*")
