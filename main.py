@@ -66,7 +66,7 @@ def generate_response(filename, file_stream, openai_api_key, model, assistant_id
 
         # NEW
         # Upload the file and poll for completion using the named file stream
-        file_batch = client.beta.vector_stores.file_batches.upload_and_poll(
+        file_batch = client.vector_stores.file_batches.upload_and_poll(
             vector_store_id=TMP_VECTOR_STORE_ID, 
             files=[file_stream]  # Pass the file_stream in a list
         )
