@@ -188,6 +188,7 @@ if st.session_state.get('authentication_status'):
             # Read file, for each row combine column information, create json string, and
             # serialize the data for later processing by the openai model.
             df = pd.read_excel(uploaded_file, engine='openpyxl')
+            df.to_excel(uploaded_file.name, index=False)
             df['combined_text'] = df.apply(lambda row: ' '.join(row.values.astype(str)), axis=1)
             json_string = df.to_json(path_or_buf=None)
             serialized_data = json.dumps(json_string, indent=4)
