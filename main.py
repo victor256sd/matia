@@ -216,7 +216,7 @@ if st.session_state.get('authentication_status'):
                     # Call function to copy file to openai storage, create vector store, and use an 
                     # assistant to eval the file.
                     with st.spinner('Calculating...'):
-                        (response, TMP_FILE_ID, TMP_VECTOR_STORE_ID, client, run, thread) = generate_response(uploaded_file, openai_api_key, model, MATH_ASSISTANT_ID, query_text)
+                        (response, TMP_FILE_ID, TMP_VECTOR_STORE_ID, client, run, thread) = generate_response(uploaded_file.name, openai_api_key, model, MATH_ASSISTANT_ID, query_text)
                         # (response, TMP_FILE_ID, TMP_VECTOR_STORE_ID, client, run, thread) = generate_response("temp.txt", openai_api_key, model, MATH_ASSISTANT_ID, query_text)
                     # Write disclaimer and response from assistant eval of file.
                     st.write("*aitam is an AI-driven platform designed to review and analyze documents. The system continues to be refined. Users should review the original file and verify the summary for reliability and relevance.*")
