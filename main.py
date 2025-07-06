@@ -2,6 +2,7 @@ import streamlit as st
 import streamlit_authenticator as stauth
 import openai
 from openai import OpenAI
+import io
 import os
 import pandas as pd
 import openpyxl
@@ -10,7 +11,13 @@ import json
 import time
 import yaml
 from yaml.loader import SafeLoader
-    
+
+# Function to wrap BytesIO with a name attribute
+class NamedBytesIO(io.BytesIO):
+    def __init__(self, buffer, name):
+        super().__init__(buffer)
+        self.name = name
+
 # Wait until run process completion.
 def wait_on_run(client, run, thread):
     while run.status == "queued" or run.status == "in_progress":
