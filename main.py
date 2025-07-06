@@ -57,7 +57,7 @@ def generate_response(filename, file_stream, openai_api_key, model, assistant_id
         )
         # Obtain vector store and file ids.
         TMP_VECTOR_STORE_ID = str(vector_store.id)
-        TMP_FILE_ID = str(file.id)
+        # TMP_FILE_ID = str(file.id)
         # # Add the file to the vector store.
         # batch_add = client.vector_stores.file_batches.create(
         #     vector_store_id=TMP_VECTOR_STORE_ID,
