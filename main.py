@@ -10,6 +10,7 @@ import json
 import time
 import yaml
 from yaml.loader import SafeLoader
+from pathlib import Path
 
 # Wait until run process completion.
 def wait_on_run(client, run, thread):
@@ -140,6 +141,18 @@ def extract_text_from_excel(uploaded_file):
     file.close()
     return output_filename
 
+def extract_text_from_pdf(uploaded_file):
+    output_filename = "temp.txt"
+    df = pd.read_excel(uploaded_file, engine='openpyxl')
+    df['combined_text'] = df.apply(lambda row: ' '.join(row.values.astype(str)), axis=1)
+    json_string = df.to_json(path_or_buf=None)
+    serialized_data = json.dumps(json_string, indent=4)
+    # Write serialized data to a text file.
+    with open(output_filename, "w") as file:
+        file.write(serialized_data)
+    file.close()
+    return output_filename
+
 # Disable the button called via on_click attribute.
 def disable_button():
     st.session_state.disabled = True        
@@ -195,13 +208,16 @@ if st.session_state.get('authentication_status'):
     # process it.
     if doc_ex:
         # File uploader for Excel files
-        uploaded_file = st.file_uploader("Choose an Excel file", type=["xlsx"], key="uploaded_file")
+        uploaded_file = st.file_uploader("Choose an Excel or PDF file", type=["pdf","xlsx"], key="uploaded_file")
         # If a file is uploaded, extract the text and write serialized information to a text file, 
         # give options for further processing, and run assistant to process the information.
         if uploaded_file:
             # Read file, for each row combine column information, create json string, and
             # serialize the data for later processing by the openai model.
-            filename = extract_text_from_excel(uploaded_file)
+            if Path(uploaded_file.name).suffix == "xlsx":            
+                filename = extract_text_from_excel(uploaded_file)
+            elif Path(uploaded_file.name).suffix == "pdf" or Path(uploaded_file.name).suffix == "PDF":
+                filename = uploaded_file.name
             # If there's no openai api key, stop.
             if not openai_api_key:
                 st.error("Please enter your OpenAI API key!")
