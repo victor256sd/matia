@@ -51,6 +51,9 @@ def generate_response(filename, openai_api_key, model, assistant_id, query_text)
             file=open(filename, "rb"),
             purpose="assistants"
         )
+
+        st.write("Made " + file.name + " from " + filename + ".")
+        st.stop()
         
         # Create vector store for processing by assistant.
         vector_store = client.vector_stores.create(
@@ -207,7 +210,7 @@ if st.session_state.get('authentication_status'):
             # serialize the data for later processing by the openai model.
             df = pd.read_excel(uploaded_file, engine='openpyxl')
             # NEW
-            output_csv = "converted_file.csv"
+            output_csv = "uploaded.csv"
             df.to_csv(output_csv, index=False)
             # To read file as bytes and create a NamedBytesIO object with the original file name
             # bytes_data = uploaded_file.getvalue()
@@ -237,7 +240,7 @@ if st.session_state.get('authentication_status'):
                     st.stop()
                 # Conduct standard aitam eval on the file.
                 if submit_doc_ex and doc_ex:
-                    query_text = "I need your help analyzing the document temp.txt."
+                    query_text = "I need your help analyzing the document " + output_csv + "."
                     # Call function to copy file to openai storage, create vector store, and use an 
                     # assistant to eval the file.
                     with st.spinner('Calculating...'):
