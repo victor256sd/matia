@@ -2,6 +2,7 @@ openai
 openpyxl
 pandas
 pathlib
+PyPDF2
 requests
 streamlit
 streamlit-authenticator
