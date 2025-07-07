@@ -202,7 +202,7 @@ if st.session_state.get('authentication_status'):
     
     # Create advanced options dropdown with upload file option.
     with st.expander("Advanced Options"):
-        doc_ex = st.checkbox("Upload Excel file for examination")
+        doc_ex = st.checkbox("Upload Excel or PDF file for examination")
     
     # If the option to upload a document was selected, allow for an upload and then 
     # process it.
