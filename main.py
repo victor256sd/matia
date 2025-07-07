@@ -75,7 +75,7 @@ def generate_response(filename, file_stream, openai_api_key, model, assistant_id
         # Update Assistant, pointed to the vector store.
         assistant = client.beta.assistants.update(
             assistant_id,
-            tools=[{"type": "file_search"}],
+            tools=[{"type": "code_interpreter"}], #OLD: file_search"}],
             tool_resources={
                 "file_search":{
                     "vector_store_ids": [TMP_VECTOR_STORE_ID]
