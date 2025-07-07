@@ -214,6 +214,7 @@ if st.session_state.get('authentication_status'):
         if uploaded_file:
             # Read file, for each row combine column information, create json string, and
             # serialize the data for later processing by the openai model.
+            filename = ""
             if Path(uploaded_file.name).suffix.lower() == "xlsx":            
                 filename = extract_text_from_excel(uploaded_file)
             elif Path(uploaded_file.name).suffix.lower() == "pdf":
