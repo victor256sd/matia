@@ -5,6 +5,7 @@ pathlib
 pillow
 pillow-heif
 PyPDF2
+pytesseract
 requests
 streamlit
 streamlit-authenticator
