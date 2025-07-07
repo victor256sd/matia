@@ -163,11 +163,12 @@ def copy_pdf(uploaded_file):
     return output_pdf_path
 
 def convert_image_to_pdf(uploaded_file):
+    output_file = "temp.pdf"
     # Open the image file
     image = Image.open(uploaded_file)
     # Convert to RGB if needed and save as PDF
-    image.convert("RGB").save("output.pdf")
-
+    image.convert("RGB").save(output_file)
+    return output_file
     
 # Disable the button called via on_click attribute.
 def disable_button():
@@ -218,13 +219,13 @@ if st.session_state.get('authentication_status'):
     
     # Create advanced options dropdown with upload file option.
     with st.expander("Advanced Options"):
-        doc_ex = st.checkbox("Upload Excel or PDF file for examination")
+        doc_ex = st.checkbox("Upload Excel, heif, jpg, PDF, or png file for examination")
     
     # If the option to upload a document was selected, allow for an upload and then 
     # process it.
     if doc_ex:
         # File uploader for Excel files
-        uploaded_file = st.file_uploader("Choose an Excel or PDF file", type=["pdf","xlsx"], key="uploaded_file")
+        uploaded_file = st.file_uploader("Choose an Excel, heif, jpg, PDF, or png file", type=["pdf","xlsx"], key="uploaded_file")
         # If a file is uploaded, extract the text and write serialized information to a text file, 
         # give options for further processing, and run assistant to process the information.
         if uploaded_file:
@@ -234,6 +235,8 @@ if st.session_state.get('authentication_status'):
                 filename = extract_text_from_excel(uploaded_file)
             elif Path(uploaded_file.name).suffix.lower() == ".pdf":
                 filename = copy_pdf(uploaded_file)
+            elif Path(uploaded_file.name).suffix.lower() == ".heif" or Path(uploaded_file.name).suffix.lower() == ".jpg" or Path(uploaded_file.name).suffix.lower() == ".png":
+                filename = convert_image_to_pdf(uploaded_file)
             # If there's no openai api key, stop.
             if not openai_api_key:
                 st.error("Please enter your OpenAI API key!")
