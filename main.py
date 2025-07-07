@@ -70,6 +70,7 @@ def generate_response(filename, file_stream, openai_api_key, model, assistant_id
             vector_store_id=TMP_VECTOR_STORE_ID, 
             files=[file_stream]  # Pass the file_stream in a list
         )
+        TMP_FILE_ID = str(file_batch.id)
         
         # Update Assistant, pointed to the vector store.
         assistant = client.beta.assistants.update(
