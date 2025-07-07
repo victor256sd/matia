@@ -2,6 +2,8 @@ openai
 openpyxl
 pandas
 pathlib
+pillow
+pillow-heif
 PyPDF2
 requests
 streamlit
