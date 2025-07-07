@@ -219,13 +219,13 @@ if st.session_state.get('authentication_status'):
     
     # Create advanced options dropdown with upload file option.
     with st.expander("Advanced Options"):
-        doc_ex = st.checkbox("Upload Excel, heif, jpg, PDF, or png file for examination")
+        doc_ex = st.checkbox("Upload Excel, PDF, or image (heif, jpg, png) file for examination")
     
     # If the option to upload a document was selected, allow for an upload and then 
     # process it.
     if doc_ex:
         # File uploader for Excel files
-        uploaded_file = st.file_uploader("Choose an Excel, heif, jpg, PDF, or png file", type=["pdf","xlsx"], key="uploaded_file")
+        uploaded_file = st.file_uploader("Choose an Excel, PDF, or image (heif, jpg, png) file", type=["xlsx","pdf","heif","jpg","png"], key="uploaded_file")
         # If a file is uploaded, extract the text and write serialized information to a text file, 
         # give options for further processing, and run assistant to process the information.
         if uploaded_file:
