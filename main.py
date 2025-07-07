@@ -12,6 +12,7 @@ import yaml
 from yaml.loader import SafeLoader
 from pathlib import Path
 from PyPDF2 import PdfReader, PdfWriter
+from PIL import Image
 
 # Wait until run process completion.
 def wait_on_run(client, run, thread):
@@ -161,6 +162,13 @@ def copy_pdf(uploaded_file):
     output_file.close()
     return output_pdf_path
 
+def convert_image_to_pdf(uploaded_file):
+    # Open the image file
+    image = Image.open(uploaded_file)
+    # Convert to RGB if needed and save as PDF
+    image.convert("RGB").save("output.pdf")
+
+    
 # Disable the button called via on_click attribute.
 def disable_button():
     st.session_state.disabled = True        
