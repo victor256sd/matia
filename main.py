@@ -11,6 +11,7 @@ import time
 import yaml
 from yaml.loader import SafeLoader
 from pathlib import Path
+from PyPDF2 import PdfReader, PdfWriter
 
 # Wait until run process completion.
 def wait_on_run(client, run, thread):
@@ -141,17 +142,24 @@ def extract_text_from_excel(uploaded_file):
     file.close()
     return output_filename
 
-def extract_text_from_pdf(uploaded_file):
-    output_filename = "temp.txt"
-    df = pd.read_excel(uploaded_file, engine='openpyxl')
-    df['combined_text'] = df.apply(lambda row: ' '.join(row.values.astype(str)), axis=1)
-    json_string = df.to_json(path_or_buf=None)
-    serialized_data = json.dumps(json_string, indent=4)
-    # Write serialized data to a text file.
-    with open(output_filename, "w") as file:
-        file.write(serialized_data)
-    file.close()
-    return output_filename
+def copy_pdf(uploaded_file):
+    # Specify the input and output file paths
+    input_pdf_path = uploaded_file
+    output_pdf_path = "temp.pdf"
+    # Read the input PDF
+    reader = PdfReader(input_pdf_path)    
+    # Create a writer object to write the copy
+    writer = PdfWriter()
+    # Add all pages from the input PDF to the writer
+    for page in reader.pages:
+        writer.add_page(page)
+    
+    # Write the copied content to the output file
+    with open(output_pdf_path, "wb") as output_file:
+        writer.write(output_file)
+    
+    output_file.close()
+    return output_pdf_path
 
 # Disable the button called via on_click attribute.
 def disable_button():
@@ -217,7 +225,7 @@ if st.session_state.get('authentication_status'):
             if Path(uploaded_file.name).suffix.lower() == ".xlsx":            
                 filename = extract_text_from_excel(uploaded_file)
             elif Path(uploaded_file.name).suffix.lower() == ".pdf":
-                filename = uploaded_file.name
+                filename = copy_pdf(uploaded_file)
             # If there's no openai api key, stop.
             if not openai_api_key:
                 st.error("Please enter your OpenAI API key!")
