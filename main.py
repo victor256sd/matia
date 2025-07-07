@@ -214,13 +214,10 @@ if st.session_state.get('authentication_status'):
         if uploaded_file:
             # Read file, for each row combine column information, create json string, and
             # serialize the data for later processing by the openai model.
-            filename = ""
-            if Path(uploaded_file.name).suffix.lower() == "xlsx":            
+            if Path(uploaded_file.name).suffix.lower() == ".xlsx":            
                 filename = extract_text_from_excel(uploaded_file)
-            elif Path(uploaded_file.name).suffix.lower() == "pdf":
+            elif Path(uploaded_file.name).suffix.lower() == ".pdf":
                 filename = uploaded_file.name
-            st.write("Filename: " + Path(uploaded_file.name).suffix.lower())
-            st.stop()
             # If there's no openai api key, stop.
             if not openai_api_key:
                 st.error("Please enter your OpenAI API key!")
