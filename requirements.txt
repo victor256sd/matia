@@ -5,7 +5,6 @@ pathlib
 pillow
 pillow-heif
 PyPDF2
-tesseract
 pytesseract
 requests
 streamlit
