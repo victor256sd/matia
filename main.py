@@ -219,7 +219,7 @@ if st.session_state.get('authentication_status'):
                 filename = extract_text_from_excel(uploaded_file)
             elif Path(uploaded_file.name).suffix.lower() == "pdf":
                 filename = uploaded_file.name
-            st.write("Filename: " + filename)
+            st.write("Filename: " + Path(uploaded_file.name).suffix.lower())
             st.stop()
             # If there's no openai api key, stop.
             if not openai_api_key:
