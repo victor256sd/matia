@@ -238,7 +238,7 @@ if st.session_state.get('authentication_status'):
                 filename = extract_text_from_excel(uploaded_file)
             elif Path(uploaded_file.name).suffix.lower() == ".pdf":
                 filename = copy_pdf(uploaded_file)
-            elif Path(uploaded_file.name).suffix.lower() == ".heif" or Path(uploaded_file.name).suffix.lower() == ".jpg" or Path(uploaded_file.name).suffix.lower() == ".png":
+            elif Path(uploaded_file.name).suffix.lower() == ".heif" or Path(uploaded_file.name).suffix.lower() == ".jpg" or Path(uploaded_file.name).suffix.lower() == ".png" or Path(uploaded_file.name).suffix.lower() == ".jpeg":
                 filename = convert_image_to_pdf(uploaded_file)
             # If there's no openai api key, stop.
             if not openai_api_key:
