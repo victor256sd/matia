@@ -1,6 +1,7 @@
 openai
 openpyxl
 pandas
+pathlib
 requests
 streamlit
 streamlit-authenticator
