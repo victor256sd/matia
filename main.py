@@ -2,7 +2,6 @@ import streamlit as st
 import streamlit_authenticator as stauth
 import openai
 from openai import OpenAI
-import io
 import os
 import pandas as pd
 import openpyxl
@@ -11,12 +10,6 @@ import json
 import time
 import yaml
 from yaml.loader import SafeLoader
-
-# Function to wrap BytesIO with a name attribute
-class NamedBytesIO(io.BytesIO):
-    def __init__(self, buffer, name):
-        super().__init__(buffer)
-        self.name = name
 
 # Wait until run process completion.
 def wait_on_run(client, run, thread):
@@ -63,16 +56,7 @@ def generate_response(filename, openai_api_key, model, assistant_id, query_text)
         batch_add = client.vector_stores.file_batches.create(
             vector_store_id=TMP_VECTOR_STORE_ID,
             file_ids=[TMP_FILE_ID]
-        )
-
-        # # NEW
-        # # Upload the file and poll for completion using the named file stream
-        # file_batch = client.vector_stores.file_batches.upload_and_poll(
-        #     vector_store_id=TMP_VECTOR_STORE_ID, 
-        #     files=[file_stream]  # Pass the file_stream in a list
-        # )
-        # TMP_FILE_ID = str(file_batch.id)
-        
+        )        
         # Update Assistant, pointed to the vector store.
         assistant = client.beta.assistants.update(
             assistant_id,
@@ -144,6 +128,18 @@ def delete_vectors(client, TMP_FILE_ID, TMP_VECTOR_STORE_ID):
         vector_store_id=TMP_VECTOR_STORE_ID
     )
 
+def extract_text_from_excel(uploaded_file):
+    output_filename = "temp.txt"
+    df = pd.read_excel(uploaded_file, engine='openpyxl')
+    df['combined_text'] = df.apply(lambda row: ' '.join(row.values.astype(str)), axis=1)
+    json_string = df.to_json(path_or_buf=None)
+    serialized_data = json.dumps(json_string, indent=4)
+    # Write serialized data to a text file.
+    with open(output_filename, "w") as file:
+        file.write(serialized_data)
+    file.close()
+    return output_filename
+
 # Disable the button called via on_click attribute.
 def disable_button():
     st.session_state.disabled = True        
@@ -205,21 +201,7 @@ if st.session_state.get('authentication_status'):
         if uploaded_file:
             # Read file, for each row combine column information, create json string, and
             # serialize the data for later processing by the openai model.
-            df = pd.read_excel(uploaded_file, engine='openpyxl')
-            # NEW
-            output_csv = "uploaded.csv"
-            df.to_csv(output_csv, index=False)
-            # To read file as bytes and create a NamedBytesIO object with the original file name
-            # bytes_data = uploaded_file.getvalue()
-            # file_stream = NamedBytesIO(bytes_data, uploaded_file.name)
-
-            df['combined_text'] = df.apply(lambda row: ' '.join(row.values.astype(str)), axis=1)
-            json_string = df.to_json(path_or_buf=None)
-            serialized_data = json.dumps(json_string, indent=4)
-            # Write serialized data to a text file.
-            with open("temp.txt", "w") as file:
-                file.write(serialized_data)
-            file.close()
+            filename = extract_text_from_excel(uploaded_file)
             # If there's no openai api key, stop.
             if not openai_api_key:
                 st.error("Please enter your OpenAI API key!")
@@ -237,12 +219,11 @@ if st.session_state.get('authentication_status'):
                     st.stop()
                 # Conduct standard aitam eval on the file.
                 if submit_doc_ex and doc_ex:
-                    query_text = "I need your help analyzing the document " + output_csv + "."
+                    query_text = "I need your help analyzing the uploaded document."
                     # Call function to copy file to openai storage, create vector store, and use an 
                     # assistant to eval the file.
                     with st.spinner('Calculating...'):
-                        (response, TMP_FILE_ID, TMP_VECTOR_STORE_ID, client, run, thread) = generate_response(output_csv, openai_api_key, model, MATH_ASSISTANT_ID, query_text)
-                        # (response, TMP_FILE_ID, TMP_VECTOR_STORE_ID, client, run, thread) = generate_response("temp.txt", openai_api_key, model, MATH_ASSISTANT_ID, query_text)
+                        (response, TMP_FILE_ID, TMP_VECTOR_STORE_ID, client, run, thread) = generate_response(filename, openai_api_key, model, MATH_ASSISTANT_ID, query_text)
                     # Write disclaimer and response from assistant eval of file.
                     st.write("*aitam is an AI-driven platform designed to review and analyze documents. The system continues to be refined. Users should review the original file and verify the summary for reliability and relevance.*")
                     st.write("#### Summary")
