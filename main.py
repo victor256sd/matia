@@ -51,9 +51,6 @@ def generate_response(filename, openai_api_key, model, assistant_id, query_text)
             file=open(filename, "rb"),
             purpose="assistants"
         )
-
-        st.write("Made " + file.name + " from " + filename + ".")
-        st.stop()
         
         # Create vector store for processing by assistant.
         vector_store = client.vector_stores.create(
