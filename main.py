@@ -46,18 +46,18 @@ def generate_response(filename, file_stream, openai_api_key, model, assistant_id
             thread_id=thread.id, role="user", content=query_text
         )
         
-        # # Create file at openai storage from the uploaded file.
-        # file = client.files.create(
-        #     file=open(filename, "rb"),
-        #     purpose="assistants"
-        # )
+        # Create file at openai storage from the uploaded file.
+        file = client.files.create(
+            file=open(filename, "rb"),
+            purpose="assistants"
+        )
         # Create vector store for processing by assistant.
         vector_store = client.vector_stores.create(
             name="aitam"
         )
         # Obtain vector store and file ids.
         TMP_VECTOR_STORE_ID = str(vector_store.id)
-        # TMP_FILE_ID = str(file.id)
+        TMP_FILE_ID = str(file.id)
         # # Add the file to the vector store.
         # batch_add = client.vector_stores.file_batches.create(
         #     vector_store_id=TMP_VECTOR_STORE_ID,
@@ -70,12 +70,12 @@ def generate_response(filename, file_stream, openai_api_key, model, assistant_id
             vector_store_id=TMP_VECTOR_STORE_ID, 
             files=[file_stream]  # Pass the file_stream in a list
         )
-        TMP_FILE_ID = str(file_batch.id)
+        # TMP_FILE_ID = str(file_batch.id)
         
         # Update Assistant, pointed to the vector store.
         assistant = client.beta.assistants.update(
             assistant_id,
-            tools=[{"type": "code_interpreter"}], #OLD: file_search"}],
+            tools=[{"type": "file_search"}],
             tool_resources={
                 "file_search":{
                     "vector_store_ids": [TMP_VECTOR_STORE_ID]
