@@ -13,6 +13,7 @@ from yaml.loader import SafeLoader
 from pathlib import Path
 from PyPDF2 import PdfReader, PdfWriter
 from PIL import Image
+import pytesseract
 
 # Wait until run process completion.
 def wait_on_run(client, run, thread):
@@ -154,20 +155,22 @@ def copy_pdf(uploaded_file):
     # Add all pages from the input PDF to the writer
     for page in reader.pages:
         writer.add_page(page)
-    
     # Write the copied content to the output file
     with open(output_pdf_path, "wb") as output_file:
-        writer.write(output_file)
-    
+        writer.write(output_file)    
     output_file.close()
     return output_pdf_path
 
 def convert_image_to_pdf(uploaded_file):
-    output_file = "temp.pdf"
+    output_file = "temp.txt"
     # Open the image file
     image = Image.open(uploaded_file)
-    # Convert to RGB if needed and save as PDF
-    image.convert("RGB").save(output_file)
+    # Extract text from the image using pytesseract
+    extracted_text = pytesseract.image_to_string(image)
+    # Write the copied content to the output file
+    with open(output_file, "w") as file:
+        file.write(extracted_text)
+    file.close()
     return output_file
     
 # Disable the button called via on_click attribute.
