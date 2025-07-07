@@ -6,7 +6,6 @@ pillow
 pillow-heif
 PyPDF2
 tesseract
-tesseract-ocr
 pytesseract
 requests
 streamlit
