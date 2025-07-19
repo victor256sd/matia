@@ -125,53 +125,51 @@ def generate_response_noassist(filename, openai_api_key, model, query_text):
 
 # Initiate AI assistant and create a run to have the assistant answer the user
 # query. 
-def generate_response_cmte(filename, openai_api_key, model, assistant_id, query_text):    
-    # Check file existence.
-    if filename is not None:
-        # Start client, thread.
-        client = OpenAI(api_key=openai_api_key)
-        thread = client.beta.threads.create()
-        # Start thread.
-        client.beta.threads.messages.create(
-            thread_id=thread.id, role="user", content=query_text
-        )
-        
-        # Create file at openai storage from the uploaded file.
-        file = client.files.create(
-            file=open(filename, "rb"),
-            purpose="assistants"
-        )
-        
-        # Create vector store for processing by assistant.
-        vector_store = client.vector_stores.create(
-            name="aitam"
-        )
-        # Obtain vector store and file ids.
-        TMP_VECTOR_STORE_ID = str(vector_store.id)
-        TMP_FILE_ID = str(file.id)
-        # Add the file to the vector store.
-        batch_add = client.vector_stores.file_batches.create(
-            vector_store_id=TMP_VECTOR_STORE_ID,
-            file_ids=[TMP_FILE_ID]
-        )        
-        # Update Assistant, pointed to the vector store.
-        assistant = client.beta.assistants.update(
-            assistant_id,
-            tools=[{"type": "file_search"}],
-            tool_resources={
-                "file_search":{
-                    "vector_store_ids": [TMP_VECTOR_STORE_ID]
-                }
+def generate_response_cmte(openai_api_key, model, assistant_id, query_text):    
+    # Start client, thread.
+    client = OpenAI(api_key=openai_api_key)
+    thread = client.beta.threads.create()
+    # Start thread.
+    client.beta.threads.messages.create(
+        thread_id=thread.id, role="user", content=query_text
+    )
+    
+    # Create file at openai storage from the uploaded file.
+    file = client.files.create(
+        file=open(filename, "rb"),
+        purpose="assistants"
+    )
+    
+    # Create vector store for processing by assistant.
+    vector_store = client.vector_stores.create(
+        name="aitam"
+    )
+    # Obtain vector store and file ids.
+    TMP_VECTOR_STORE_ID = str(vector_store.id)
+    TMP_FILE_ID = str(file.id)
+    # Add the file to the vector store.
+    batch_add = client.vector_stores.file_batches.create(
+        vector_store_id=TMP_VECTOR_STORE_ID,
+        file_ids=[TMP_FILE_ID]
+    )        
+    # Update Assistant, pointed to the vector store.
+    assistant = client.beta.assistants.update(
+        assistant_id,
+        tools=[{"type": "file_search"}],
+        tool_resources={
+            "file_search":{
+                "vector_store_ids": [TMP_VECTOR_STORE_ID]
             }
-        )
-        # Create a run to have assistant process the vector store file.
-        run = client.beta.threads.runs.create(
-            thread_id=thread.id,
-            assistant_id=assistant_id,
-        )
-        # Wait on the run to complete, then retrieve messages from the thread.
-        run = wait_on_run(client, run, thread)
-        messages = get_response(client, thread)
+        }
+    )
+    # Create a run to have assistant process the vector store file.
+    run = client.beta.threads.runs.create(
+        thread_id=thread.id,
+        assistant_id=assistant_id,
+    )
+    # Wait on the run to complete, then retrieve messages from the thread.
+    run = wait_on_run(client, run, thread)
+    messages = get_response(client, thread)
     return messages, TMP_FILE_ID, TMP_VECTOR_STORE_ID, client, run, thread
 
 # Delete file in openai storage and the vector store.
@@ -253,6 +251,7 @@ if st.session_state.get('authentication_status'):
     VECTOR_STORE_ID = st.secrets["VECTOR_STORE_ID"]
     MATH_ASSISTANT_ID = st.secrets["MATH_ASSISTANT_ID"]
     MATH_ASSISTANT2_ID = st.secrets["MATH_ASSISTANT2_ID"]
+    MATH_ASSISTANT3_ID = st.secrets["MATH_ASSISTANT3_ID"]    
     
     # Set page layout and title.
     st.set_page_config(page_title="aitam0", page_icon="📖", layout="wide")
