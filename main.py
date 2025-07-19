@@ -2,8 +2,8 @@ import streamlit as st
 import streamlit_authenticator as stauth
 import openai
 from openai import OpenAI
-# import openai-agents
-# from agents import Agent, Runner, function_tool
+import openai-agents
+from agents import Agent, Runner, function_tool
 import os
 import pandas as pd
 import openpyxl
