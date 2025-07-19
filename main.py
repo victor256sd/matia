@@ -223,6 +223,8 @@ if st.session_state.get('authentication_status'):
     # Create advanced options dropdown with upload file option.
     with st.expander("Advanced Options"):
         doc_ex = st.checkbox("Upload Excel, PDF, or image (heif, jpg, png) file for examination")
+        lib_ex = st.checkbox("Library mode")
+        cmte_ex = st.checkbox("Advisory mode")
     
     # If the option to upload a document was selected, allow for an upload and then 
     # process it.
@@ -295,46 +297,91 @@ if st.session_state.get('authentication_status'):
     if not openai_api_key:
         st.error("Please enter your OpenAI API key!")
         st.stop()
-    
-    # Create new form to search aitam library vector store.    
-    with st.form(key="qa_form", clear_on_submit=False):
-        query = st.text_area("**Search Library Holdings**")
-        submit = st.form_submit_button("Search")
-    # If submit button is clicked, query the aitam library.            
-    if submit:
-        # If form is submitted without a query, stop.
-        if not query:
-            st.error("Enter a question to search the library!")
-            st.stop()            
-        # Setup output columns to display results.
-        answer_col, sources_col = st.columns(2)
-        # Create new client for this submission.
-        client2 = OpenAI(api_key=openai_api_key)
-        # Query the aitam library vector store and include internet
-        # serach results.
-        with st.spinner('Calculating...'):
-            response2 = client2.responses.create(
-                input = query,
-                model = model,
-                temperature = 0.3,
-                tools = [{
-                            "type": "file_search",
-                            "vector_store_ids": [VECTOR_STORE_ID],
-                }],
-                include=["output[*].file_search_call.search_results"]
-            )
-        # Write response to the answer column.    
-        with answer_col:
-            st.markdown("#### Response")
-            st.markdown(response2.output[1].content[0].text)
-        # Write files used to generate the answer.
-        with sources_col:
-            st.markdown("#### Sources")
-            # Extract annotations from the response
-            annotations = response2.output[1].content[0].annotations
-            # Get top-k retrieved filenames
-            retrieved_files = set([response2.filename for response2 in annotations])   
-            st.markdown(retrieved_files)    
+
+    # If Library mode was selected.
+    if lib_ex:
+        # Create new form to search aitam library vector store.    
+        with st.form(key="qa_form", clear_on_submit=False):
+            query = st.text_area("**Search Library Holdings**")
+            submit = st.form_submit_button("Search")
+        # If submit button is clicked, query the aitam library.            
+        if submit:
+            # If form is submitted without a query, stop.
+            if not query:
+                st.error("Enter a question to search the library!")
+                st.stop()            
+            # Setup output columns to display results.
+            answer_col, sources_col = st.columns(2)
+            # Create new client for this submission.
+            client2 = OpenAI(api_key=openai_api_key)
+            # Query the aitam library vector store and include internet
+            # serach results.
+            with st.spinner('Calculating...'):
+                response2 = client2.responses.create(
+                    input = query,
+                    model = model,
+                    temperature = 0.3,
+                    tools = [{
+                                "type": "file_search",
+                                "vector_store_ids": [VECTOR_STORE_ID],
+                    }],
+                    include=["output[*].file_search_call.search_results"]
+                )
+            # Write response to the answer column.    
+            with answer_col:
+                st.markdown("#### Response")
+                st.markdown(response2.output[1].content[0].text)
+            # Write files used to generate the answer.
+            with sources_col:
+                st.markdown("#### Sources")
+                # Extract annotations from the response
+                annotations = response2.output[1].content[0].annotations
+                # Get top-k retrieved filenames
+                retrieved_files = set([response2.filename for response2 in annotations])   
+                st.markdown(retrieved_files)    
+
+    # If Advisory mode was selected.
+    if cmte_ex:
+        # Create new form to query AI assistant.    
+        with st.form(key="cmte_form", clear_on_submit=False):
+            query = st.text_area("**Query-5**")
+            submit = st.form_submit_button("Ask")
+        # If submit button is clicked, query the aitam library.            
+        if submit:
+            # If form is submitted without a query, stop.
+            if not query:
+                st.error("Enter a question!")
+                st.stop()            
+            # Setup output columns to display results.
+            answer_col, sources_col = st.columns(2)
+            # Create new client for this submission.
+            client3 = OpenAI(api_key=openai_api_key)
+            # Query the aitam library vector store and include internet
+            # serach results.
+            with st.spinner('Calculating...'):
+                response2 = client3.responses.create(
+                    input = query,
+                    model = model,
+                    temperature = 0.3,
+                    tools = [{
+                                "type": "file_search",
+                                "vector_store_ids": [VECTOR_STORE_ID],
+                    }],
+                    include=["output[*].file_search_call.search_results"]
+                )
+            # Write response to the answer column.    
+            with answer_col:
+                st.markdown("#### Response")
+                st.markdown(response2.output[1].content[0].text)
+            # Write files used to generate the answer.
+            with sources_col:
+                st.markdown("#### Sources")
+                # Extract annotations from the response
+                annotations = response2.output[1].content[0].annotations
+                # Get top-k retrieved filenames
+                retrieved_files = set([response2.filename for response2 in annotations])   
+                st.markdown(retrieved_files)    
+
 
 elif st.session_state.get('authentication_status') is False:
     st.error('Username/password is incorrect')
