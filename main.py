@@ -435,7 +435,7 @@ if st.session_state.get('authentication_status'):
     if cmte_ex:
         # Create new form to query AI assistant.    
         with st.form(key="cmte_form", clear_on_submit=False):
-            query = st.text_area("**Query-5**")
+            query = st.text_area("**Query Advisors**")
             submit = st.form_submit_button("Ask")
         # If submit button is clicked, query the aitam library.            
         if submit:
