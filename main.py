@@ -204,9 +204,12 @@ async def generate_response_cmte(open_api_key, vs_id, query_text):
     )
     synthesizer_agent = Agent(
         name="synthesizer_agent",
-        instructions="You receive input from the advisory team and produce a final response incorporating their various perspectives.",
-    )            
-
+        instructions=(
+            "You receive input from the advisory team and produce a final response."
+            "Please organize the repsonse by agent role, but have each agent response written in paragraph form."
+            "For each agent response, avoid using bullet points, numbered lists, or sentence fragments."
+        )            
+    )
     # # Run the entire orchestration in a single trace
     # with trace("Orchestrator evaluator"):
     #     orchestrator_result = await Runner.run(orchestrator_agent, query_text)
