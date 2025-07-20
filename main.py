@@ -212,7 +212,7 @@ async def generate_response_cmte(open_api_key, vs_id, query_text):
     #     orchestrator_result = await Runner.run(orchestrator_agent, query_text)
     #     synthesizer_result = await Runner.run(synthesizer_agent, orchestrator_result.to_input_list())
     
-    client = OpenAI(api_key=openai_api_key)
+    openai.api_key = openai_api_key
     orchestrator_result = await Runner.run(orchestrator_agent, query_text)
     synthesizer_result = await Runner.run(synthesizer_agent, orchestrator_result.to_input_list())
 
