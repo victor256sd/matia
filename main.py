@@ -291,7 +291,6 @@ if st.session_state.get('authentication_status'):
     VECTOR_STORE_ID = st.secrets["VECTOR_STORE_ID"]
     MATH_ASSISTANT_ID = st.secrets["MATH_ASSISTANT_ID"]
     MATH_ASSISTANT2_ID = st.secrets["MATH_ASSISTANT2_ID"]
-    MATH_ASSISTANT3_ID = st.secrets["MATH_ASSISTANT3_ID"]    
     
     # Set page layout and title.
     st.set_page_config(page_title="aitam0", page_icon="📖", layout="wide")
