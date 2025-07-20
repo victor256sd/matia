@@ -471,11 +471,11 @@ if st.session_state.get('authentication_status'):
             # serach results.
             # Set up OpenAI client with your API key
             with st.spinner('Calculating...'):
-                event_loop = asyncio.get_running_loop()
-                if event_loop.is_running():
-                    response3 = asyncio.create_task(generate_response_cmte(openai_api_key, VECTOR_STORE_ID, query))
-                else:
-                    response3 = asyncio.run(generate_response_cmte(openai_api_key, VECTOR_STORE_ID, query))
+                # event_loop = asyncio.get_running_loop()
+                # if event_loop.is_running():
+                #     response3 = asyncio.create_task(generate_response_cmte(openai_api_key, VECTOR_STORE_ID, query))
+                # else:
+                response3 = asyncio.run_sync(generate_response_cmte(openai_api_key, VECTOR_STORE_ID, query))
             st.markdown("#### Response")
             st.markdown(response3)
             # report all properties of the object
