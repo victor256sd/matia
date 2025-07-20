@@ -2,6 +2,7 @@ import streamlit as st
 import streamlit_authenticator as stauth
 import openai
 from openai import OpenAI
+from openai import AsyncOpenAI
 import openai-agents
 from agents import Agent, Runner, function_tool
 import os
@@ -122,63 +123,95 @@ def generate_response_noassist(filename, openai_api_key, model, query_text):
             }]
         )        
     return messages, TMP_FILE_ID, TMP_VECTOR_STORE_ID, client
-
-@function_tool
-def cmte_assist_1() -> list | None:
-
-
-    
+   
 # Initiate AI assistant and create a run to have the assistant answer the user
 # query. 
-def generate_response_cmte(openai_api_key, model, assistant_id, query_text):    
-    # Obtain assistant ID.
-    ASSIST_1 = st.secrets["ASSIST_1"]
-    ASSIST_2 = st.secrets["ASSIST_2"]
-    ASSIST_3 = st.secrets["ASSIST_3"]
-    ASSIST_4 = st.secrets["ASSIST_4"]
-    ASSIST_5 = st.secrets["ASSIST_5"]
-    ASSIST_6 = st.secrets["ASSIST_6"]
-    ASSIST_7 = st.secrets["ASSIST_7"]
-    ASSIST_8 = st.secrets["ASSIST_8"]
-    
-    # Start client, thread.
-    client = OpenAI(api_key=openai_api_key)
-    thread = client.beta.threads.create()
-    # Start thread.
-    client.beta.threads.messages.create(
-        thread_id=thread.id, role="user", content=query_text
-    )
-        
-    # # Create vector store for processing by assistant.
-    # vector_store = client.vector_stores.create(
-    #     name="aitam"
-    # )
-    # # Obtain vector store and file ids.
-    # TMP_VECTOR_STORE_ID = str(vector_store.id)
-    # Add the file to the vector store.
-    # batch_add = client.vector_stores.file_batches.create(
-    #     vector_store_id=TMP_VECTOR_STORE_ID,
-    #     file_ids=[TMP_FILE_ID]
-    # )        
-    # Update Assistant, pointed to the assistant.
-    assistant = client.beta.assistants.update(
-        assistant_id,
+def generate_response_cmte(vs_id, query_text):    
+    assist1_agent = Agent(
+        name="security_agent",
+        instructions="You are the safety and security expert. Focus on threat detection, incident response, and coordination with law enforcement. Be factual, calm, and risk-aware in your recommendations.",
+        handoff_description="The safety and security expert",
         tools=[{"type": "file_search"}],
         tool_resources={
             "file_search":{
-                "vector_store_ids": [TMP_VECTOR_STORE_ID]
+                "vector_store_ids": [vs_id]
             }
         }
     )
-    # Create a run to have assistant process the vector store file.
-    run = client.beta.threads.runs.create(
-        thread_id=thread.id,
-        assistant_id=assistant_id,
+    assist2_agent = Agent(
+        name="hr_agent",
+        instructions="You represent HR and labor relations. Ensure that all actions respect employee rights, organizational policies, and fair practices. Balance empathy with procedural integrity.",
+        handoff_description="HR and labor relations representative",
+        tools=[{"type": "file_search"}],
+        tool_resources={
+            "file_search":{
+                "vector_store_ids": [vs_id]
+            }
+        }
     )
-    # Wait on the run to complete, then retrieve messages from the thread.
-    run = wait_on_run(client, run, thread)
-    messages = get_response(client, thread)
-    return messages, TMP_FILE_ID, TMP_VECTOR_STORE_ID, client, run, thread
+    assist3_agent = Agent(
+        name="legal_agent",
+        instructions="You are the legal advisor. Provide clear, accurate, and risk-aware legal guidance. Ensure compliance with laws and regulations, and flag any potential liabilities.",
+        handoff_description="The legal advisor",
+        tools=[{"type": "file_search"}],
+        tool_resources={
+            "file_search":{
+                "vector_store_ids": [vs_id]
+            }
+        }
+    )
+    assist4_agent = Agent(
+        name="mental_health_agent",
+        instructions="You are the mental health and wellness expert. Offer insights into behavioral risk, emotional well-being, and support strategies. Prioritize empathy, confidentiality, and clinical objectivity.",
+        handoff_description="The mental health and wellness expert",
+        tools=[{"type": "file_search"}],
+        tool_resources={
+            "file_search":{
+                "vector_store_ids": [vs_id]
+            }
+        }
+    )
+    orchestrator_agent = Agent(
+        name="orchestrator_agent",
+        instructions=(
+            "You are the facilitator of an advisory group. Direct questions to the appropriate AI assistant, manage turn-taking, and synthesize input into clear summaries or decisions. Maintain neutrality and ensure all voices are heard."
+            "You never answer on your own, you always use the provided tools."
+        ),
+        tools=[
+            assist1_agent.as_tool(
+                tool_name="security_agent",
+                tool_description="The safety and security expert",
+            ),
+            assist2_agent.as_tool(
+                tool_name="hr_agent",
+                tool_description="HR and labor relations representative",
+            ),
+            assist3_agent.as_tool(
+                tool_name="legal_agent",
+                tool_description="The legal advisor",
+            ),
+            assist4_agent.as_tool(
+                tool_name="mental_health_agent",
+                tool_description="The mental health and wellness expert",
+            ),
+        ],
+    )
+    synthesizer_agent = Agent(
+        name="synthesizer_agent",
+        instructions="You receive input from the advisory team and produce a final response incorporating their various perspectives.",
+    )            
+    # Run the entire orchestration in a single trace
+    with trace("Orchestrator evaluator"):
+        orchestrator_result = await Runner.run(orchestrator_agent, query_text)
+        # for item in orchestrator_result.new_items:
+        #     if isinstance(item, MessageOutputItem):
+        #         text = ItemHelpers.text_message_output(item)
+        #         if text:
+        #             print(f"  - Translation step: {text}")
+        synthesizer_result = await Runner.run(
+            synthesizer_agent, orchestrator_result.to_input_list()
+        )
+    return synthesizer_result.final_output
 
 # Delete file in openai storage and the vector store.
 def delete_vectors(client, TMP_FILE_ID, TMP_VECTOR_STORE_ID):
@@ -412,36 +445,17 @@ if st.session_state.get('authentication_status'):
             if not query:
                 st.error("Enter a question!")
                 st.stop()            
-            # Setup output columns to display results.
-            answer_col, sources_col = st.columns(2)
             # Create new client for this submission.
-            client3 = OpenAI(api_key=openai_api_key)
+            # client3 = OpenAI(api_key=openai_api_key)
+            client3 = AsyncOpenAI(api_key=os.getenv(openai_api_key))
             # Query the aitam library vector store and include internet
             # serach results.
             with st.spinner('Calculating...'):
-                response2 = client3.responses.create(
-                    input = query,
-                    model = model,
-                    temperature = 0.3,
-                    tools = [{
-                                "type": "file_search",
-                                "vector_store_ids": [VECTOR_STORE_ID],
-                    }],
-                    include=["output[*].file_search_call.search_results"]
+                response3 = generate_response_cmte(VECTOR_STORE_ID, query)
                 )
             # Write response to the answer column.    
-            with answer_col:
-                st.markdown("#### Response")
-                st.markdown(response2.output[1].content[0].text)
-            # Write files used to generate the answer.
-            with sources_col:
-                st.markdown("#### Sources")
-                # Extract annotations from the response
-                annotations = response2.output[1].content[0].annotations
-                # Get top-k retrieved filenames
-                retrieved_files = set([response2.filename for response2 in annotations])   
-                st.markdown(retrieved_files)    
-
+            st.markdown("#### Response")
+            st.markdown(response3.output[1].content[0].text)
 
 elif st.session_state.get('authentication_status') is False:
     st.error('Username/password is incorrect')
