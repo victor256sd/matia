@@ -210,7 +210,7 @@ def generate_response_cmte(vs_id, query_text):
         synthesizer_result = Runner.run(
             synthesizer_agent, orchestrator_result
         )
-    return synthesizer_result.final_output
+    return synthesizer_result
 
 # Delete file in openai storage and the vector store.
 def delete_vectors(client, TMP_FILE_ID, TMP_VECTOR_STORE_ID):
