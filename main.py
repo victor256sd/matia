@@ -4,6 +4,7 @@ import openai
 from openai import OpenAI
 from openai import AsyncOpenAI
 from agents import Agent, ItemHelpers, MessageOutputItem, Runner, FileSearchTool, function_tool, trace
+import asyncio
 import os
 import pandas as pd
 import openpyxl
@@ -199,18 +200,21 @@ def generate_response_cmte(vs_id, query_text):
         name="synthesizer_agent",
         instructions="You receive input from the advisory team and produce a final response incorporating their various perspectives.",
     )            
+    synthesizer_result = asyncio.run(orchestrator_init)
+
+async def orchestrator_init(orchestrator_agent, synthesizer_agent, query_text):
     # Run the entire orchestration in a single trace
     with trace("Orchestrator evaluator"):
         orchestrator_result = Runner.run(orchestrator_agent, query_text)
-        for item in orchestrator_result.new_items:
-            if isinstance(item, MessageOutputItem):
-                text = ItemHelpers.text_message_output(item)
-                if text:
-                    print(f"  - Text: {text}")
-        synthesizer_result = Runner.run(
+        # for item in orchestrator_result.new_items:
+        #     if isinstance(item, MessageOutputItem):
+        #         text = ItemHelpers.text_message_output(item)
+        #         if text:
+        #             print(f"  - Text: {text}")
+        synthesizer_result = await Runner.run(
             synthesizer_agent, orchestrator_result.to_input_list()
         )
-    return synthesizer_result.final_output
+    return synthesizer_result.final_output 
 
 # Delete file in openai storage and the vector store.
 def delete_vectors(client, TMP_FILE_ID, TMP_VECTOR_STORE_ID):
