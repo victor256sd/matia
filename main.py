@@ -208,7 +208,7 @@ def generate_response_cmte(vs_id, query_text):
         #         if text:
         #             print(f"  - Translation step: {text}")
         synthesizer_result = Runner.run(
-            synthesizer_agent, orchestrator_result.to_input_list()
+            synthesizer_agent, orchestrator_result
         )
     return synthesizer_result.final_output
 
