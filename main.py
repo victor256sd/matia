@@ -208,10 +208,8 @@ async def generate_response_cmte(open_api_key, vs_id, query_text):
         instructions="You receive input from the advisory team and produce a final response incorporating their various perspectives.",
     )            
 
-    st.markdown(query_text)
-    orchestrator_result = await Runner.run_sync(orchestrator_agent, query_text)
-    st.markdown(orchestrator_result.final_output)
-    synthesizer_result = await Runner.run_sync(synthesizer_agent, orchestrator_result.final_output)
+    orchestrator_result = await Runner.run(orchestrator_agent, query_text)
+    synthesizer_result = await Runner.run(synthesizer_agent, orchestrator_result.to_input_list())
     st.markdown(synthesizer_result.final_output)
 
     return synthesizer_result.final_output
