@@ -126,7 +126,7 @@ def generate_response_noassist(filename, openai_api_key, model, query_text):
    
 # Initiate AI assistant and create a run to have the assistant answer the user
 # query. 
-def generate_response_cmte(open_api_key, vs_id, query_text):    
+async def generate_response_cmte(open_api_key, vs_id, query_text):    
     # client = OpenAI(api_key=openai_api_key)
     # thread = client.beta.threads.create()
     # # Start thread.
