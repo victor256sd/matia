@@ -182,7 +182,7 @@ async def generate_response_cmte(open_api_key, vs_id, query_text):
         instructions=(
             "You are the facilitator of an advisory group." 
             "You define the task and direct questions to the appropriate AI agent, ensuring each agent addresses their part comprehensively. Maintain neutrality and ensure all voices are heard."
-            "Each agent should respond in paragraph form, not bullet points.
+            "Each agent should respond in paragraph form, not bullet points."
             "Please ensure that each agent provides a well-reasoned response, including relevant context, and justifications for their conclusions. Avoid vague or overly brief answers."
             "Use domain-specific terminology where appropriate, but explain it clearly."
             "Assume the reader is intelligent but not an expert."
