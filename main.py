@@ -133,7 +133,7 @@ async def generate_response_cmte(open_api_key, vs_id, query_text):
     # client.beta.threads.messages.create(
     #     thread_id=thread.id, role="user", content=query_text
     # )
-
+    st.markdown(query_text)
     assist1_agent = Agent(
         name="security_agent",
         instructions="You are the safety and security expert. Focus on threat detection, incident response, and coordination with law enforcement. Be factual, calm, and risk-aware in your recommendations.",
