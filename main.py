@@ -211,7 +211,8 @@ async def generate_response_cmte(open_api_key, vs_id, query_text):
     # with trace("Orchestrator evaluator"):
     #     orchestrator_result = await Runner.run(orchestrator_agent, query_text)
     #     synthesizer_result = await Runner.run(synthesizer_agent, orchestrator_result.to_input_list())
-    
+
+    client = AsyncOpenAI(api_key=openai_api_key)
     orchestrator_result = await Runner.run(orchestrator_agent, query_text)
     synthesizer_result = await Runner.run(synthesizer_agent, orchestrator_result.to_input_list())
 
@@ -469,7 +470,6 @@ if st.session_state.get('authentication_status'):
             # Query the aitam library vector store and include internet
             # serach results.
             # Set up OpenAI client with your API key
-            openai.api_key = openai_api_key
             with st.spinner('Calculating...'):
                 response3 = asyncio.run(generate_response_cmte(openai_api_key, VECTOR_STORE_ID, query))
             st.markdown("#### Response")
