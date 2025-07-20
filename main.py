@@ -220,10 +220,8 @@ async def generate_response_cmte(open_api_key, vs_id, query_text):
     # client = OpenAI(api_key=openai_api_key)
     orchestrator_result = await Runner.run(orchestrator_agent, query_text)
     synthesizer_result = await Runner.run(synthesizer_agent, orchestrator_result.to_input_list())
-
-    # st.write(synthesizer_result.messages[-1]['content'])
     
-    return synthesizer_result.final_output
+    return synthesizer_result
 
 async def orchestrator_init(orchestrator_agent, synthesizer_agent, query_text):
     synthesizer_result = []
@@ -482,7 +480,8 @@ if st.session_state.get('authentication_status'):
                 # else:
                 response3 = asyncio.run(generate_response_cmte(openai_api_key, VECTOR_STORE_ID, query))
             st.markdown("#### Response")
-            st.markdown(response3)
+            # st.markdown(response3)
+            st.markdown(response3.messages[-1]['content'])
             # report all properties of the object
             # for method in dir(response3):
             #     # check if callable
