@@ -452,7 +452,6 @@ if st.session_state.get('authentication_status'):
             # serach results.
             with st.spinner('Calculating...'):
                 response3 = generate_response_cmte(VECTOR_STORE_ID, query)
-                )
             # Write response to the answer column.    
             st.markdown("#### Response")
             st.markdown(response3.output[1].content[0].text)
