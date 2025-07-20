@@ -466,7 +466,7 @@ if st.session_state.get('authentication_status'):
                 response3 = generate_response_cmte(openai_api_key, VECTOR_STORE_ID, query)
             # Write response to the answer column.    
             st.markdown("#### Response")
-            st.markdown(response3.choices[0].message.content)
+            st.markdown(response3.choices[0].message)
             # for m in response3:
             #     st.markdown(m.content[0].text.value)
             # st.markdown(response3.choices[0].text)
