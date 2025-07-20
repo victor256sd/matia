@@ -133,7 +133,6 @@ async def generate_response_cmte(open_api_key, vs_id, query_text):
     # client.beta.threads.messages.create(
     #     thread_id=thread.id, role="user", content=query_text
     # )
-    st.markdown(query_text)
     assist1_agent = Agent(
         name="security_agent",
         instructions="You are the safety and security expert. Focus on threat detection, incident response, and coordination with law enforcement. Be factual, calm, and risk-aware in your recommendations.",
@@ -213,8 +212,6 @@ async def generate_response_cmte(open_api_key, vs_id, query_text):
         orchestrator_result = await Runner.run(orchestrator_agent, query_text)
         synthesizer_result = await Runner.run(synthesizer_agent, orchestrator_result.to_input_list())
     
-    st.markdown(synthesizer_result.final_output)
-
     return synthesizer_result.final_output
 
 async def orchestrator_init(orchestrator_agent, synthesizer_agent, query_text):
@@ -466,9 +463,10 @@ if st.session_state.get('authentication_status'):
             # client3 = AsyncOpenAI(api_key=openai_api_key)
             # Query the aitam library vector store and include internet
             # serach results.
-            st.markdown("#### Response")
             with st.spinner('Calculating...'):
                 response3 = generate_response_cmte(openai_api_key, VECTOR_STORE_ID, query)
+            st.markdown("#### Response")
+            st.markdown(response3)
             # Write response.    
             # st.markdown(response3.choices[0].message)
             # for m in response3:
