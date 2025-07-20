@@ -213,7 +213,7 @@ async def orchestrator_init(orchestrator_agent, synthesizer_agent, query_text):
         #         text = ItemHelpers.text_message_output(item)
                 # if text:
                 #     print(f"  - Text: {text}")
-        synthesizer_result.append(await Runner.run(synthesizer_agent, orchestrator_result))
+        synthesizer_result.append(await Runner.astep(run(synthesizer_agent, orchestrator_result)))
     return synthesizer_result.final_output 
 
 # Delete file in openai storage and the vector store.
