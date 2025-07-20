@@ -180,7 +180,13 @@ async def generate_response_cmte(open_api_key, vs_id, query_text):
     orchestrator_agent = Agent(
         name="orchestrator_agent",
         instructions=(
-            "You are the facilitator of an advisory group. Direct questions to the appropriate AI assistant, manage turn-taking, and synthesize input into clear summaries or decisions. Maintain neutrality and ensure all voices are heard."
+            "You are the facilitator of an advisory group." 
+            "You define the task and direct questions to the appropriate AI agent, ensuring each agent addresses their part comprehensively. Maintain neutrality and ensure all voices are heard."
+            "Each agent should respond in paragraph form, not bullet points.
+            "Please ensure that each agent provides a well-reasoned response, including relevant context, and justifications for their conclusions. Avoid vague or overly brief answers."
+            "Use domain-specific terminology where appropriate, but explain it clearly."
+            "Assume the reader is intelligent but not an expert."
+            "Include citations or references if applicable."
             "You never answer on your own, you always use the provided tools."
         ),
         tools=[
@@ -208,6 +214,7 @@ async def generate_response_cmte(open_api_key, vs_id, query_text):
             "You receive input from the advisory team and produce a final response."
             "Please organize the repsonse by agent role, but have each agent response written in paragraph form."
             "For each agent response, avoid using bullet points, numbered lists, or sentence fragments."
+            "In the final paragraph, integrate the agents' responses into a cohesive summary, highlighting key insights and resolving any contradictions."
         )            
     )
     # # Run the entire orchestration in a single trace
@@ -480,7 +487,7 @@ if st.session_state.get('authentication_status'):
                 # else:
                 response3 = asyncio.run(generate_response_cmte(openai_api_key, VECTOR_STORE_ID, query))
             st.markdown("#### Response")
-            st.markdown(response3.raw_responses)
+            st.markdown(response3.final_output)
             # st.markdown(response3.messages[-1]['content'])
             # report all properties of the object
             # for method in dir(response3):
