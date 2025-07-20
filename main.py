@@ -207,10 +207,16 @@ async def generate_response_cmte(open_api_key, vs_id, query_text):
         instructions="You receive input from the advisory team and produce a final response incorporating their various perspectives.",
     )            
 
-    # Run the entire orchestration in a single trace
-    with trace("Orchestrator evaluator"):
-        orchestrator_result = await Runner.run(orchestrator_agent, query_text)
-        synthesizer_result = await Runner.run(synthesizer_agent, orchestrator_result.to_input_list())
+    # # Run the entire orchestration in a single trace
+    # with trace("Orchestrator evaluator"):
+    #     orchestrator_result = await Runner.run(orchestrator_agent, query_text)
+    #     synthesizer_result = await Runner.run(synthesizer_agent, orchestrator_result.to_input_list())
+    
+    client = openai.AsyncOpenAI(api_key=openai_api_key)
+    orchestrator_result = await client.run(agent=orchestrator_agent, messages=[{"role": "user", "content": query_text}])
+    synthesizer_result = await Runner.run(synthesizer_agent, orchestrator_result.to_input_list())
+
+    st.write(synthesizer_result.messages[-1]['content'])
     
     return synthesizer_result
 
@@ -464,9 +470,8 @@ if st.session_state.get('authentication_status'):
             # Query the aitam library vector store and include internet
             # serach results.
             # Set up OpenAI client with your API key
-            client3 = AsyncOpenAI(api_key=openai_api_key)
             with st.spinner('Calculating...'):
-                response3 = client3.asyncio.run(generate_response_cmte(openai_api_key, VECTOR_STORE_ID, query))
+                response3 = asyncio.run(generate_response_cmte(openai_api_key, VECTOR_STORE_ID, query))
             st.markdown("#### Response")
             st.markdown(response3)
             # report all properties of the object
