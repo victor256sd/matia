@@ -143,7 +143,7 @@ async def generate_response_cmte(model, vs_id, query_text):
                 vector_store_ids=vs_id,
             )
         ],
-        model_config=model,
+        model=model,
     )
     assist2_agent = Agent(
         name="hr_agent",
@@ -155,7 +155,7 @@ async def generate_response_cmte(model, vs_id, query_text):
                 vector_store_ids=vs_id,
             )
         ],
-        model_config=model,
+        model=model,
     )
     assist3_agent = Agent(
         name="legal_agent",
@@ -167,7 +167,7 @@ async def generate_response_cmte(model, vs_id, query_text):
                 vector_store_ids=vs_id,
             )
         ],
-        model_config=model,
+        model=model,
     )
     assist4_agent = Agent(
         name="mental_health_agent",
@@ -179,7 +179,7 @@ async def generate_response_cmte(model, vs_id, query_text):
                 vector_store_ids=vs_id,
             )
         ],
-        model_config=model,
+        model=model,
     )
     orchestrator_agent = Agent(
         name="orchestrator_agent",
@@ -211,7 +211,7 @@ async def generate_response_cmte(model, vs_id, query_text):
                 tool_description="The mental health and wellness expert",
             ),
         ],
-        model_config=model,
+        model=model,
     )
     synthesizer_agent = Agent(
         name="synthesizer_agent",
@@ -221,7 +221,7 @@ async def generate_response_cmte(model, vs_id, query_text):
             "For each agent response, avoid using bullet points, numbered lists, or sentence fragments."
             "In the final paragraph, integrate the agents' responses into a cohesive summary, highlighting key insights and resolving any contradictions."
         ),            
-        model_config=model,
+        model=model,
     )
     # # Run the entire orchestration in a single trace
     # with trace("Orchestrator evaluator"):
