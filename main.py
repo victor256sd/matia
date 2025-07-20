@@ -481,10 +481,10 @@ if st.session_state.get('authentication_status'):
             st.markdown("#### Response")
             st.markdown(response3)
             # report all properties of the object
-            for method in dir(response3):
-                # check if callable
-                if callable(getattr(response3, method)):
-                    st.markdown(method) 
+            # for method in dir(response3):
+            #     # check if callable
+            #     if callable(getattr(response3, method)):
+            #         st.markdown(method) 
             # Write response.    
             # st.markdown(response3.choices[0].message)
             # for m in response3:
