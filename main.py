@@ -463,8 +463,10 @@ if st.session_state.get('authentication_status'):
             # client3 = AsyncOpenAI(api_key=openai_api_key)
             # Query the aitam library vector store and include internet
             # serach results.
+            # Set up OpenAI client with your API key
+            client3 = AsyncOpenAI(api_key=openai_api_key)
             with st.spinner('Calculating...'):
-                response3 = asyncio.run(generate_response_cmte(openai_api_key, VECTOR_STORE_ID, query), api_key=openai_api_key)
+                response3 = asyncio.run(generate_response_cmte(openai_api_key, VECTOR_STORE_ID, query))
             st.markdown("#### Response")
             st.markdown(response3)
             # report all properties of the object
