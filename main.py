@@ -4,6 +4,7 @@ import openai
 from openai import OpenAI
 from openai import AsyncOpenAI
 from agents import Agent, ItemHelpers, MessageOutputItem, Runner, FileSearchTool, function_tool, trace
+from swarm import Swarm
 import asyncio
 import os
 import pandas as pd
@@ -212,7 +213,7 @@ async def generate_response_cmte(open_api_key, vs_id, query_text):
     #     orchestrator_result = await Runner.run(orchestrator_agent, query_text)
     #     synthesizer_result = await Runner.run(synthesizer_agent, orchestrator_result.to_input_list())
     
-    client = openai.AsyncOpenAI(api_key=openai_api_key)
+    client = Swarm(api_key=openai_api_key)
     orchestrator_result = await client.run(agent=orchestrator_agent, messages=[{"role": "user", "content": query_text}])
     synthesizer_result = await Runner.run(synthesizer_agent, orchestrator_result.to_input_list())
 
