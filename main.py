@@ -220,7 +220,7 @@ async def generate_response_cmte(model, vs_id, query_text):
             "Please organize the repsonse by agent role, but have each agent response written in paragraph form."
             "For each agent response, avoid using bullet points, numbered lists, or sentence fragments."
             "In the final paragraph, integrate the agents' responses into a cohesive summary, highlighting key insights and resolving any contradictions."
-        )            
+        ),            
         model_config=model,
     )
     # # Run the entire orchestration in a single trace
