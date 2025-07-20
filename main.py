@@ -218,9 +218,9 @@ async def generate_response_cmte(open_api_key, vs_id, query_text):
     orchestrator_result = await Runner.run(orchestrator_agent, query_text)
     synthesizer_result = await Runner.run(synthesizer_agent, orchestrator_result.to_input_list())
 
-    st.write(synthesizer_result.messages[-1]['content'])
+    # st.write(synthesizer_result.messages[-1]['content'])
     
-    return synthesizer_result
+    return synthesizer_result.final_output
 
 async def orchestrator_init(orchestrator_agent, synthesizer_agent, query_text):
     synthesizer_result = []
