@@ -126,7 +126,14 @@ def generate_response_noassist(filename, openai_api_key, model, query_text):
    
 # Initiate AI assistant and create a run to have the assistant answer the user
 # query. 
-def generate_response_cmte(vs_id, query_text):    
+def generate_response_cmte(open_api_key, vs_id, query_text):    
+    # client = OpenAI(api_key=openai_api_key)
+    # thread = client.beta.threads.create()
+    # # Start thread.
+    # client.beta.threads.messages.create(
+    #     thread_id=thread.id, role="user", content=query_text
+    # )
+
     assist1_agent = Agent(
         name="security_agent",
         instructions="You are the safety and security expert. Focus on threat detection, incident response, and coordination with law enforcement. Be factual, calm, and risk-aware in your recommendations.",
@@ -200,8 +207,11 @@ def generate_response_cmte(vs_id, query_text):
         name="synthesizer_agent",
         instructions="You receive input from the advisory team and produce a final response incorporating their various perspectives.",
     )            
-    synthesizer_result = asyncio.run(orchestrator_init(orchestrator_agent, synthesizer_agent, query_text))
-    return synthesizer_result
+
+    orchestrator_result = await Runner.run(orchestrator_agent, query_text)
+    synthesizer_result = await Runner.run(synthesizer_agent, orchestrator_result.final_output)
+
+    return synthesizer_result.final_output
 
 async def orchestrator_init(orchestrator_agent, synthesizer_agent, query_text):
     synthesizer_result = []
@@ -213,7 +223,7 @@ async def orchestrator_init(orchestrator_agent, synthesizer_agent, query_text):
         #         text = ItemHelpers.text_message_output(item)
                 # if text:
                 #     print(f"  - Text: {text}")
-        synthesizer_result.append(await Runner.astep(run(synthesizer_agent, orchestrator_result)))
+        synthesizer_result.append(await Runner.run(synthesizer_agent, orchestrator_result))
     return synthesizer_result.final_output 
 
 # Delete file in openai storage and the vector store.
@@ -449,14 +459,16 @@ if st.session_state.get('authentication_status'):
                 st.stop()            
             # Create new client for this submission.
             # client3 = OpenAI(api_key=openai_api_key)
-            client3 = AsyncOpenAI(api_key=openai_api_key)
+            # client3 = AsyncOpenAI(api_key=openai_api_key)
             # Query the aitam library vector store and include internet
             # serach results.
             with st.spinner('Calculating...'):
-                response3 = generate_response_cmte(VECTOR_STORE_ID, query)
+                response3 = generate_response_cmte(openai_api_key, VECTOR_STORE_ID, query)
             # Write response to the answer column.    
             st.markdown("#### Response")
-            st.markdown(response3.choices[0].text)
+            for m in response3:
+                st.markdown(m.content[0].text.value)
+            # st.markdown(response3.choices[0].text)
             # st.markdown(response3.output[1].content[0].text)
 
 elif st.session_state.get('authentication_status') is False:
