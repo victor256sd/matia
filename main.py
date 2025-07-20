@@ -209,6 +209,7 @@ async def generate_response_cmte(open_api_key, vs_id, query_text):
     )            
 
     orchestrator_result = await Runner.run(orchestrator_agent, query_text)
+    st.markdown(orchestrator_result.final_output)
     synthesizer_result = await Runner.run(synthesizer_agent, orchestrator_result.final_output)
     st.markdown(synthesizer_result.final_output)
 
