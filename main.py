@@ -3,7 +3,7 @@ import streamlit_authenticator as stauth
 import openai
 from openai import OpenAI
 from openai import AsyncOpenAI
-from agents import Agent, Runner, function_tool
+from agents import Agent, Runner, FileSearchTool, function_tool
 import os
 import pandas as pd
 import openpyxl
@@ -130,45 +130,45 @@ def generate_response_cmte(vs_id, query_text):
         name="security_agent",
         instructions="You are the safety and security expert. Focus on threat detection, incident response, and coordination with law enforcement. Be factual, calm, and risk-aware in your recommendations.",
         handoff_description="The safety and security expert",
-        tools=[{"type": "file_search"}],
-        tool_resources={
-            "file_search":{
-                "vector_store_ids": [vs_id]
-            }
-        }
+        tools=[
+            FileSearchTool(
+                max_num_results=3,
+                vector_store_ids=vs_id,
+            )
+        ],
     )
     assist2_agent = Agent(
         name="hr_agent",
         instructions="You represent HR and labor relations. Ensure that all actions respect employee rights, organizational policies, and fair practices. Balance empathy with procedural integrity.",
         handoff_description="HR and labor relations representative",
-        tools=[{"type": "file_search"}],
-        tool_resources={
-            "file_search":{
-                "vector_store_ids": [vs_id]
-            }
-        }
+        tools=[
+            FileSearchTool(
+                max_num_results=3,
+                vector_store_ids=vs_id,
+            )
+        ],
     )
     assist3_agent = Agent(
         name="legal_agent",
         instructions="You are the legal advisor. Provide clear, accurate, and risk-aware legal guidance. Ensure compliance with laws and regulations, and flag any potential liabilities.",
         handoff_description="The legal advisor",
-        tools=[{"type": "file_search"}],
-        tool_resources={
-            "file_search":{
-                "vector_store_ids": [vs_id]
-            }
-        }
+        tools=[
+            FileSearchTool(
+                max_num_results=3,
+                vector_store_ids=vs_id,
+            )
+        ],
     )
     assist4_agent = Agent(
         name="mental_health_agent",
         instructions="You are the mental health and wellness expert. Offer insights into behavioral risk, emotional well-being, and support strategies. Prioritize empathy, confidentiality, and clinical objectivity.",
         handoff_description="The mental health and wellness expert",
-        tools=[{"type": "file_search"}],
-        tool_resources={
-            "file_search":{
-                "vector_store_ids": [vs_id]
-            }
-        }
+        tools=[
+            FileSearchTool(
+                max_num_results=3,
+                vector_store_ids=vs_id,
+            )
+        ],
     )
     orchestrator_agent = Agent(
         name="orchestrator_agent",
