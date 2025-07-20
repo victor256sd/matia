@@ -466,7 +466,7 @@ if st.session_state.get('authentication_status'):
             with st.spinner('Calculating...'):
                 response3 = generate_response_cmte(openai_api_key, VECTOR_STORE_ID, query)
             st.markdown("#### Response")
-            st.markdown(response3.final_output)
+            st.markdown(response3)
             # report all properties of the object
             for method in dir(response3):
                 # check if callable
