@@ -200,7 +200,8 @@ def generate_response_cmte(vs_id, query_text):
         name="synthesizer_agent",
         instructions="You receive input from the advisory team and produce a final response incorporating their various perspectives.",
     )            
-    synthesizer_result = asyncio.run(orchestrator_init)
+    synthesizer_result = asyncio.run(orchestrator_init(orchestrator_agent, synthesizer_agent, query_text))
+    return synthesizer_result
 
 async def orchestrator_init(orchestrator_agent, synthesizer_agent, query_text):
     # Run the entire orchestration in a single trace
