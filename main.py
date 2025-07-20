@@ -3,7 +3,7 @@ import streamlit_authenticator as stauth
 import openai
 from openai import OpenAI
 from openai import AsyncOpenAI
-from agents import Agent, Runner, FileSearchTool, function_tool
+from agents import Agent, Runner, FileSearchTool, function_tool, trace
 import os
 import pandas as pd
 import openpyxl
