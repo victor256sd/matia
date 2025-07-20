@@ -445,7 +445,7 @@ if st.session_state.get('authentication_status'):
                 st.stop()            
             # Create new client for this submission.
             # client3 = OpenAI(api_key=openai_api_key)
-            client3 = AsyncOpenAI(api_key=os.getenv(openai_api_key))
+            client3 = AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
             # Query the aitam library vector store and include internet
             # serach results.
             with st.spinner('Calculating...'):
