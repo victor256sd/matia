@@ -11,5 +11,5 @@ pytesseract
 requests
 streamlit
 streamlit-authenticator
-swarm
+swarm @ git+https://github.com/openai/swarm.git@d46acab2d41f4d2d351fa9a34fe0677da20f6296 ; python_version >= "3.11" and python_version < "4.0"
 tiktoken
