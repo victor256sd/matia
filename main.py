@@ -480,8 +480,8 @@ if st.session_state.get('authentication_status'):
                 # else:
                 response3 = asyncio.run(generate_response_cmte(openai_api_key, VECTOR_STORE_ID, query))
             st.markdown("#### Response")
-            # st.markdown(response3)
-            st.markdown(response3.messages[-1]['content'])
+            st.markdown(response3)
+            # st.markdown(response3.messages[-1]['content'])
             # report all properties of the object
             # for method in dir(response3):
             #     # check if callable
