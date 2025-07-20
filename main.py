@@ -207,11 +207,11 @@ async def orchestrator_init(orchestrator_agent, synthesizer_agent, query_text):
     # Run the entire orchestration in a single trace
     with trace("Orchestrator evaluator"):
         orchestrator_result = Runner.run(orchestrator_agent, query_text)
-        # for item in orchestrator_result.new_items:
-        #     if isinstance(item, MessageOutputItem):
-        #         text = ItemHelpers.text_message_output(item)
-        #         if text:
-        #             print(f"  - Text: {text}")
+        for item in orchestrator_result.new_items:
+            if isinstance(item, MessageOutputItem):
+                text = ItemHelpers.text_message_output(item)
+                # if text:
+                #     print(f"  - Text: {text}")
         synthesizer_result = await Runner.run(
             synthesizer_agent, orchestrator_result.to_input_list()
         )
