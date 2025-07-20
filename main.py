@@ -3,7 +3,6 @@ import streamlit_authenticator as stauth
 import openai
 from openai import OpenAI
 from openai import AsyncOpenAI
-import openai-agents
 from agents import Agent, Runner, function_tool
 import os
 import pandas as pd
