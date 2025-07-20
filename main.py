@@ -212,7 +212,7 @@ async def generate_response_cmte(open_api_key, vs_id, query_text):
         orchestrator_result = await Runner.run(orchestrator_agent, query_text)
         synthesizer_result = await Runner.run(synthesizer_agent, orchestrator_result.to_input_list())
     
-    return synthesizer_result.choices[0].text
+    return synthesizer_result
 
 async def orchestrator_init(orchestrator_agent, synthesizer_agent, query_text):
     synthesizer_result = []
@@ -464,7 +464,7 @@ if st.session_state.get('authentication_status'):
             # Query the aitam library vector store and include internet
             # serach results.
             with st.spinner('Calculating...'):
-                response3 = generate_response_cmte(openai_api_key, VECTOR_STORE_ID, query)
+                response3 = asyncio.generate_response_cmte(openai_api_key, VECTOR_STORE_ID, query)
             st.markdown("#### Response")
             st.markdown(response3)
             # report all properties of the object
