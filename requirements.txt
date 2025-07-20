@@ -11,4 +11,5 @@ pytesseract
 requests
 streamlit
 streamlit-authenticator
+swarm
 tiktoken
