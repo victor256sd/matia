@@ -208,8 +208,9 @@ async def generate_response_cmte(open_api_key, vs_id, query_text):
         instructions="You receive input from the advisory team and produce a final response incorporating their various perspectives.",
     )            
 
-    orchestrator_result = await Runner.run_sync(orchestrator_agent, query_text)
-    synthesizer_result = await Runner.run_sync(synthesizer_agent, orchestrator_result.final_output)
+    orchestrator_result = await Runner.run(orchestrator_agent, query_text)
+    synthesizer_result = await Runner.run(synthesizer_agent, orchestrator_result.final_output)
+    st.markdown(synthesizer_result.final_output)
 
     return synthesizer_result.final_output
 
@@ -462,11 +463,11 @@ if st.session_state.get('authentication_status'):
             # client3 = AsyncOpenAI(api_key=openai_api_key)
             # Query the aitam library vector store and include internet
             # serach results.
+            st.markdown("#### Response")
             with st.spinner('Calculating...'):
                 response3 = generate_response_cmte(openai_api_key, VECTOR_STORE_ID, query)
-            # Write response to the answer column.    
-            st.markdown("#### Response")
-            st.markdown(response3.choices[0].message)
+            # Write response.    
+            # st.markdown(response3.choices[0].message)
             # for m in response3:
             #     st.markdown(m.content[0].text.value)
             # st.markdown(response3.choices[0].text)
