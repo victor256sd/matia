@@ -32,6 +32,7 @@ if st.session_state.get('authentication_status'):
     # Model list, Vector store ID, assistant IDs (one for initial upload eval, 
     # the second for follow-up user questions).
     MODEL_LIST = ["gpt-4.1-nano", "gpt-4o-mini", "gpt-4.1", "o4-mini"]
+    OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
     VECTOR_STORE_ID = st.secrets["VECTOR_STORE_ID"]
     INSTRUCTION = INSTRUCTION = """
     
