@@ -36,8 +36,8 @@ if st.session_state.get('authentication_status'):
     INSTRUCTION = st.secrets["INSTRUCTION"]
     
     # Set page layout and title.
-    st.set_page_config(page_title="move-AI", page_icon="📖", layout="wide")
-    st.header("move-AI")
+    st.set_page_config(page_title="overnight", page_icon="📖", layout="wide")
+    st.header("overnight")
     
     # Field for OpenAI API key.
     openai_api_key = os.environ.get("OPENAI_API_KEY", None)
