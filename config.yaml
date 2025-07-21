@@ -7,10 +7,10 @@ credentials:
     femi:
       email: fdeala30@gmail.com
       name: femi
-      password: $2b$12$8oUrYQqJ9XH8qogfTaukAukSUJnOpQAebmhPhKg1d5FsKiqiFoBWO
+      password: $2b$12$fWKyQnbEZz/Vj579huoPTeh/pb7qLwdB5R0woYCyjaiIgdO0UhmnC
 cookie:
   expiry_days: 30
-  key: move-ai_signature_key # Must be string
-  name: move-ai_cookie_name
+  key: overnight_signature_key # Must be string
+  name: overnight_cookie_name
 preauthorized:
   emails:
