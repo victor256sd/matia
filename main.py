@@ -7,7 +7,8 @@ import time
 import yaml
 from yaml.loader import SafeLoader
 from pathlib import Path
-    
+from cryptography.fernet import Fernet
+
 # Disable the button called via on_click attribute.
 def disable_button():
     st.session_state.disabled = True        
@@ -34,49 +35,12 @@ if st.session_state.get('authentication_status'):
     MODEL_LIST = ["gpt-4.1-nano"] #, "gpt-4o-mini", "gpt-4.1", "o4-mini"]
     OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
     VECTOR_STORE_ID = st.secrets["VECTOR_STORE_ID"]
-    INSTRUCTION = INSTRUCTION = """
-    
-    #Primary Purpose
+    INSTRUCTION_ENCRYPTED = b'gAAAAABofk51ITzUXBBnTqAnvxVOuIo-vMayvLO7r3KgKrymkIOQNrRoUkBzjnq4__mVgWrzRNMcSqnDJ9hbUdeIcN9-YH0IGzKtVPfa9yPmRBXE_TIGFr0eEE1Ub4hMvvjGrKeaTXymw8UEtJvmCQAxT5sffthrfm8kqQiTcNDuqSQT_9lSHYKQxOtRxEWf7ZmItQp8jTNFxikV2SnlUYPVRy-v3IVY5horMwiE_nqXJ7k9Jthzob1j2kHkAhxSXGe-3gtsqxto6McoZ447b78g9Wr5eqTA6bCC_EmOV8mvzAjdD7XFiuKcXKqlS2wX4a74N4yOsma-_vThGzEHRvAZXPCAQa-gFvvoBl61YEQPfwzF7Gf23hWe1Pv8K3iKUJPOj2I5JQDFYrOLOQmB3nuSPelV7jMFy9tOyP-jPUyiKiB9Ew8EiI08cVxNK4UNzwqQeKXJmriGapKdUE1xcdanNYmNgWoFJUISYMdOh6ZSEnJRVB7mZ7L6Q_xsI7QrGSalUGBNm_3gGqHudwg5fnbS7t2ocFYs7k3sSIGr5qRAG4E4a16lIj7MAuW5V1FcAEl5nwmIQNeANHlOR-3sYgC6pEl4UtDMfGtwNnpnK5YeaO-pthWz7dpoms9aA7NoY_sTR4spCV_z2YBvo-dFYp43OHAm4to5GKAnY2VU9D8Xa9Ge-QUllB70G3YOFxEH0kuWIfINbRhyDNJijwzMx4bgImuXaPRgJOwRzir-GHlkSl30uLqhQbXixsjFoyVefujOLSQMebKcsBpsRXqrLJjTESXnawxTUoH3FD0PRdFH_nC9olBDjfq0xZbniGeSOgGx5b94ZD14AfR2qE6vRriYXDUj_2sLnux50t_QhE10e_rDxVE31rmsSb_ai1f76q7FCg6MdLSe3RNjR9GEDVAh9wAiL7uOUQGHhnJ30fnui7Do1iMv8ObNACdSqjAZfnTvuR9g058koBYOPuOLIKLQZT4O0IE-uhxtu5YwqJviEkasiXvlEyBapnLqRRxk61Arvc1c_haOecPlGLl0UbNEhmpDr_sSNUAbOgNtMgrZf-SppiqC9v-LBELymc2WCIbAou9gsYvEmT2XF2vb1giylE4Ca_pyy3nYpbY6I9R3DvmE2aU2w_b1t3T9JQmWps89BrkwqpqwzFq1mi0E4VHL4JQcZ08MqDnMBTI6FC0T5S-NKpCUxJVnooD5avotU2dbH5b6pjTI_tGSzxmUNc57QxOVW0PRPivniOb5QVi6JldQ68cIQ8whPjrBqCYAGKdwIleVvoJ1KEU61Dek1XWMc5KIs4HScSvApEH7nTdSTIIMX-m-Mb09Wrd2ZbDYtXHDQKzLFUli-4_XA-pKbAyz8eXMPzXIJw4Pnu3xNm3FRsb_03du1Uxpvgd_ThU1QaSAICWooJOWF30YTVYVhWQlqcQijd_0R5tc17GzjzKvkp-w9SZ0UfbmY4Z1y7zlNTbOXYJf4_gjiqw8w48ZQLUbbB72nejbeXZr6AnxrP9jniyOVAdB9g5BhfO1YFzJpZ3hpR8KbLoEOu1ecxNEatdIRE7D4_gLIXY-qED0OMulD5ITuCMVCt0f6QFxQ3AdZ5VrHKmFjiGa9rMrC0IVgvs3fgxErVXOdcg8VicVsFlKBAr5qiSWuYQKfJDSzgl6zPCRRPxxKK3lxJKlB5v1W4wqtNfkRSi5uy3dN2NpXRA29rie7Id9Noh_wAsZ2Yh9M4264utzrY0Rhl4KzZZcrsoAEuwOBa55cba9bw32QbX0OUVp5_dDThUjAkrRWZPDwBCpLmGmO_3mGNKHizPjaoJUFOI8q6dooBTR6AZwtcUbKOcxEICvQudwlbEabikgThMzP3IPsh6Uzv0dRaqGi0XiMOg3F_G5Y9AHEODV4GzrBWyx9XQMvnJLkHtioPzQU59oxRLH69o4Td8IlPc6MMjJ3ng9uGOB3W3Jz9remrW0X6rBI8EkHAVEAuCWSC5uQQdQdaHX60lNHyVuDMA0-tGSh-zCg47IwOuUWF8VQdaP0uHkFG-i7nPATKffdz8p51S6iBdv7kxOV6iGxx_RE8MTKwwth46rAoN_yNoNNjQ7HJwWfCxo4wOj12SLhNlnL0UnQb29VYnzL2NMXqbVPwLaXgNwjlA9kAfn3qAL1vnYC-jqnQbhOqKswhvwg8le2XL_k78NX24g0uH8J23wOBLkwGpOhvij_onbA_DrDY3KH2xa-UsW37h4g3aA6Zi-mehExp5EKyZpB7mAcQw8Y0ACmHr2V7aUlM2HDbY4pypfU0LVyIWBHq5eqLw7cr3dT6TBCwu6ZmhiU9Hyo9e98SWHXitOl1CghMPv32GMEbUdL1whT2C_hC_nt_z7YlS10B9mD4Rsd9GvMkz_tqTidNLZDg59RRAtjFolgo8ouiUtVtuCMvk-RtSxIpL4tTFE7S08-fru-9ppZ6BAApUmwHLyS93oUt_97kUZyq3dKtc2zHZ1HOOd1WdjCBizIEfEmt2yxI8qK0yj3V4A9P37kAQe2-BnoiweisAgqJSgo_-_Ig21H5Jt0XdU4-PjlVGzZddlHZgEHlP4v8jTZMmAI3uyCh2sg_7VUjzKoudGt8RJyOJAC69euZFIJGVtJ5R3i3Z5QymLkvGPVyyE-Mi1AZO1SbRD9GAQtlKiqttiaPXgpORIszb2JkM='    
 
-    The chatbot is designed to assist users by answering questions specifically about the company’s travel policy. All responses must be derived from the travel policy document stored in the vector database to ensure accuracy and consistency.
+    key = st.secrets('INSTRUCTION_KEY')
+    f = Fernet(key)
+    INSTRUCTION = f.decrypt(INSTRUCTION_ENCRYPTED).decode()
 
-    #Response Guidelines
-
-    ##Source-Based Answers Only
-
-    All answers about the travel policy must be grounded in the content of the vector store.
-
-    If the answer is not found in the document, the chatbot should respond with:
-    "I'm not able to find that information in the company's travel policy."
-
-    ##Uncertain or Incomplete Information
-
-    If the chatbot is unsure or the information is ambiguous, it should say:
-    "I'm not completely certain about that based on the available information. You may want to confirm with the appropriate department."
-
-    #Answer Format
-
-    Responses should be concise but complete, written in paragraph form, and easy to understand.
-
-    #Other Company Topics
-
-    The chatbot may respond to questions about other company-related topics (e.g., HR, IT, Legal, Payroll, Accounts Payable), but the chatbot should qualify the response by stating:
-    "This specific information is not found within the policy documents for which I have access, however, I can provide some general guidance."
-    
-    Responses must be measured and cautious, and the chatbot should consider the perspectives of multiple departments (e.g., HR, IT, Legal, Payroll, Accounts Payable) and avoid making assumptions.
-
-    If the topic is outside the chatbot’s scope or lacks sufficient information, it should respond with:
-    "That may involve multiple departments. I recommend reaching out to the appropriate team for a more complete answer."
-
-    #External or Non-Company Topics
-
-    The chatbot should politely decline to answer questions unrelated to the company or its policies.
-
-    Example response:
-    "I’m here to help with questions about the company and its policies. I’m not able to provide information on that topic."
-    
-    """
-    
     # Set page layout and title.
     st.set_page_config(page_title="overnight", page_icon="📖", layout="wide")
     st.header("overnight")
