@@ -96,6 +96,7 @@ if st.session_state.get('authentication_status'):
             # Get top-k retrieved filenames
             retrieved_files = set([response2.filename for response2 in annotations])   
             st.markdown(retrieved_files)
+            st.markdown("#### Token Usage")
             st.markdown(response2.usage)
 
 elif st.session_state.get('authentication_status') is False:
