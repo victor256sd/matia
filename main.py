@@ -101,8 +101,8 @@ if st.session_state.get('authentication_status'):
 
             response3 = response2.json()
             cost = response3['usage']['input_tokens'] * .1 / 10^6 + response3['usage']['output_tokens'] * .4 / 10^6
-            formatted_cost = "${:,.4f}".format(cost)
-            st.markdown(formatted_cost)
+            # formatted_cost = "${:,.4f}".format(cost)
+            st.markdown(cost)
             
 elif st.session_state.get('authentication_status') is False:
     st.error('Username/password is incorrect')
