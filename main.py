@@ -77,7 +77,7 @@ if st.session_state.get('authentication_status'):
                 instructions = INSTRUCTION,
                 input = query,
                 model = model,
-                temperature = 0.3,
+                temperature = 0.6,
                 tools = [{
                             "type": "file_search",
                             "vector_store_ids": [VECTOR_STORE_ID],
@@ -95,7 +95,8 @@ if st.session_state.get('authentication_status'):
             annotations = response2.output[1].content[0].annotations
             # Get top-k retrieved filenames
             retrieved_files = set([response2.filename for response2 in annotations])   
-            st.markdown(retrieved_files)    
+            st.markdown(retrieved_files)
+            st.markdown(response2.usage)
 
 elif st.session_state.get('authentication_status') is False:
     st.error('Username/password is incorrect')
