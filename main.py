@@ -8,6 +8,7 @@ import yaml
 from yaml.loader import SafeLoader
 from pathlib import Path
 from cryptography.fernet import Fernet
+import re
 
 # Disable the button called via on_click attribute.
 def disable_button():
@@ -86,8 +87,9 @@ if st.session_state.get('authentication_status'):
             )
         # Write response to the answer column.    
         with answer_col:
+            cleaned_response = re.sub('【.*?†source】', '', response2.output[1].content[0].text)
             st.markdown("#### Response")
-            st.markdown(response2.output[1].content[0].text)
+            st.markdown(cleaned_response)
         # Write files used to generate the answer.
         with sources_col:
             st.markdown("#### Sources")
