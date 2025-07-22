@@ -99,7 +99,7 @@ if st.session_state.get('authentication_status'):
             st.markdown("#### Token Usage")
             st.markdown(response2.usage)
 
-            cost = response2.usage[0].prompt_tokens * .1 / 10^6 + response2.usage[0].completion_tokens * .4 / 10^6
+            cost = response2.usage.prompt_tokens * .1 / 10^6 + response2.usage.completion_tokens * .4 / 10^6
             formatted_cost = "${:,.4f}".format(amount)
             st.markdown(formatted_cost)
             
