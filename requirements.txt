@@ -2,7 +2,6 @@ cryptography
 openai
 openpyxl
 pathlib
-re
 requests
 streamlit
 streamlit-authenticator
