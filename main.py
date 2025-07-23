@@ -101,7 +101,7 @@ if st.session_state.get('authentication_status'):
             st.markdown("#### Token Usage")
             st.markdown(response2.usage)
 
-            cost = response2.usage.input_tokens * .1 / 10^6 + response2.usage.output_tokens * .4 / 10^6
+            cost = response2.usage.input_tokens*.1/1000000+response2.usage.output_tokens*.4/1000000
             formatted_cost = "${:,.4f}".format(cost)
             st.markdown(formatted_cost)
             # response3 = response2.json()
