@@ -119,7 +119,20 @@ if st.session_state.get('authentication_status'):
             # st.markdown(f"Output Tokens: {output_tokens}")
             st.markdown(f"Total Tokens: {total_tokens_str}")
 
-            cost = input_tokens*.1/1000000 + output_tokens*.4/1000000
+            if model == "gpt-4.1-nano":
+                input_token_cost = .1/1000000
+                output_token_cost = .4/1000000
+            elif model == "gpt-4o-mini":
+                input_token_cost = .15/1000000
+                output_token_cost = .6/1000000
+            elif model == "gpt-4.1":
+                input_token_cost = 2.00/1000000
+                output_token_cost = 8.00/1000000
+            elif model == "o4-mini":
+                input_token_cost = 1.10/1000000
+                output_token_cost = 4.40/1000000
+
+            cost = input_tokens*input_token_cost + output_tokens*output_token_cost
             formatted_cost = "${:,.4f}".format(cost)
             
             st.markdown(f"**Total Cost:** {formatted_cost}")
