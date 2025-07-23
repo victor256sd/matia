@@ -93,16 +93,21 @@ if st.session_state.get('authentication_status'):
         # Write files used to generate the answer.
         with sources_col:
             st.markdown("#### Sources")
-            # Extract annotations from the response
+            # Extract annotations from the response, and print source files.
             annotations = response2.output[1].content[0].annotations
-            # Get top-k retrieved filenames
-            retrieved_files = set([response2.filename for response2 in annotations])   
-            st.markdown(retrieved_files)
-            st.markdown("#### Token Usage")
-            st.markdown(response2.usage)
+            retrieved_files = set([response2.filename for response2 in annotations])
+            file_list_str = ", ".join(retrieved_files)
+            st.markdown(f"**File(s):** {file_list_str}")
 
-            cost = response2.usage.input_tokens*.1/1000000+response2.usage.output_tokens*.4/1000000
+            st.markdown("#### Token Usage")
+            input_tokens = response2.usage.input_tokens
+            output_tokens = response2.usage.output_tokens
+            total_tokens = input_tokens + output_tokens
+            cost = input_tokens*.1/1000000 + output_tokens*.4/1000000
             formatted_cost = "${:,.4f}".format(cost)
+            st.markdown(f"Input Tokens: {input_tokens}")
+            st.markdown(f"Output Tokens: {output_tokens}")
+            st.markdown(f"Total Tokens: {total_tokens}")
             st.markdown(f"**Total Cost:** {formatted_cost}")
             # response3 = response2.json()
             # cost = response3['usage']['input_tokens'] * .1 / 10^6 + response3['usage']['output_tokens'] * .4 / 10^6
