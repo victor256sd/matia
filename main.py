@@ -43,8 +43,8 @@ if st.session_state.get('authentication_status'):
     INSTRUCTION = f.decrypt(INSTRUCTION_ENCRYPTED).decode()
 
     # Set page layout and title.
-    st.set_page_config(page_title="overnight", page_icon="📖", layout="wide")
-    st.header("overnight")
+    st.set_page_config(page_title="switch", page_icon="📖", layout="wide")
+    st.header("switch")
     
     # Field for OpenAI API key.
     openai_api_key = os.environ.get("OPENAI_API_KEY", None)
@@ -59,7 +59,7 @@ if st.session_state.get('authentication_status'):
     
     # Create new form to search aitam library vector store.    
     with st.form(key="qa_form", clear_on_submit=False):
-        query = st.text_area("**Query SDSURF Travel Policy 2024**")
+        query = st.text_area("**Query Library**")
         submit = st.form_submit_button("Query")
     # If submit button is clicked, query the aitam library.            
     if submit:
