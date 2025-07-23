@@ -4,10 +4,6 @@ credentials:
       email: victor@aberration.com
       name: victor
       password: $2b$12$.ejUPQtRJR9cLgZd.e7fUeBpUFf5gXT/9RwXsZNCKhvWuT96wsywK
-    femi:
-      email: 
-      name: 
-      password: 
 cookie:
   expiry_days: 30
   key: baud_signature_key # Must be string
