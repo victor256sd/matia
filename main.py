@@ -87,7 +87,8 @@ if st.session_state.get('authentication_status'):
             )
         # Write response to the answer column.    
         with answer_col:
-            cleaned_response = re.sub('【.*?†source】', '', response2.output[1].content[0].text)
+            cleaned_response = re.sub(r'【.*?†.*?】', '', response2.output[1].content[0].text)
+            # cleaned_response = re.sub('【.*?†source】', '', response2.output[1].content[0].text)
             st.markdown("#### Response")
             st.markdown(cleaned_response)
         # Write files used to generate the answer.
@@ -111,13 +112,12 @@ if st.session_state.get('authentication_status'):
                 f"""
                 <p style="margin-bottom:0;">Input Tokens: {input_tokens_str}</p>
                 <p style="margin-bottom:0;">Output Tokens: {output_tokens_str}</p>
-                <p style="margin-bottom:0;">Total Tokens: {total_tokens_str}</p>
                 """,
                 unsafe_allow_html=True
             )
             # st.markdown(f"Input Tokens: {input_tokens}")
             # st.markdown(f"Output Tokens: {output_tokens}")
-            # st.markdown(f"Total Tokens: {total_tokens}")
+            st.markdown(f"Total Tokens: {total_tokens}")
 
             cost = input_tokens*.1/1000000 + output_tokens*.4/1000000
             formatted_cost = "${:,.4f}".format(cost)
