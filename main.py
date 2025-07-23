@@ -103,11 +103,25 @@ if st.session_state.get('authentication_status'):
             input_tokens = response2.usage.input_tokens
             output_tokens = response2.usage.output_tokens
             total_tokens = input_tokens + output_tokens
+            input_tokens_str = f"{input_tokens:,}"
+            output_tokens_str = f"{output_tokens:,}"
+            total_tokens_str = f"{total_tokens:,}"
+
+            st.markdown(
+                f"""
+                <p style="margin-bottom:0;">Input Tokens: {input_tokens_str}</p>
+                <p style="margin-bottom:0;">Output Tokens: {output_tokens_str}</p>
+                <p style="margin-bottom:0;">Total Tokens: {total_tokens_str}</p>
+                """,
+                unsafe_allow_html=True
+            )
+            # st.markdown(f"Input Tokens: {input_tokens}")
+            # st.markdown(f"Output Tokens: {output_tokens}")
+            # st.markdown(f"Total Tokens: {total_tokens}")
+
             cost = input_tokens*.1/1000000 + output_tokens*.4/1000000
             formatted_cost = "${:,.4f}".format(cost)
-            st.markdown(f"Input Tokens: {input_tokens}")
-            st.markdown(f"Output Tokens: {output_tokens}")
-            st.markdown(f"Total Tokens: {total_tokens}")
+            
             st.markdown(f"**Total Cost:** {formatted_cost}")
             # response3 = response2.json()
             # cost = response3['usage']['input_tokens'] * .1 / 10^6 + response3['usage']['output_tokens'] * .4 / 10^6
