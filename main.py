@@ -458,17 +458,43 @@ if st.session_state.get('authentication_status'):
                 )
             # Write response to the answer column.    
             with answer_col:
+                cleaned_response = re.sub(r'【.*?†.*?】', '', response2.output[1].content[0].text)
+                # cleaned_response = re.sub('【.*?†source】', '', response2.output[1].content[0].text)
                 st.markdown("#### Response")
-                st.markdown(response2.output[1].content[0].text)
+                st.markdown(cleaned_response)
             # Write files used to generate the answer.
             with sources_col:
                 st.markdown("#### Sources")
-                # Extract annotations from the response
+                # Extract annotations from the response, and print source files.
                 annotations = response2.output[1].content[0].annotations
-                # Get top-k retrieved filenames
-                retrieved_files = set([response2.filename for response2 in annotations])   
-                st.markdown(retrieved_files)    
-
+                retrieved_files = set([response2.filename for response2 in annotations])
+                file_list_str = ", ".join(retrieved_files)
+                st.markdown(f"**File(s):** {file_list_str}")
+    
+                st.markdown("#### Token Usage")
+                input_tokens = response2.usage.input_tokens
+                output_tokens = response2.usage.output_tokens
+                total_tokens = input_tokens + output_tokens
+                input_tokens_str = f"{input_tokens:,}"
+                output_tokens_str = f"{output_tokens:,}"
+                total_tokens_str = f"{total_tokens:,}"
+    
+                st.markdown(
+                    f"""
+                    <p style="margin-bottom:0;">Input Tokens: {input_tokens_str}</p>
+                    <p style="margin-bottom:0;">Output Tokens: {output_tokens_str}</p>
+                    """,
+                    unsafe_allow_html=True
+                )
+                # st.markdown(f"Input Tokens: {input_tokens}")
+                # st.markdown(f"Output Tokens: {output_tokens}")
+                st.markdown(f"Total Tokens: {total_tokens}")
+    
+                cost = input_tokens*.1/1000000 + output_tokens*.4/1000000
+                formatted_cost = "${:,.4f}".format(cost)
+                
+                st.markdown(f"**Total Cost:** {formatted_cost}")
+            
     # If Advisory mode was selected.
     if cmte_ex:
         # Create new form to query AI assistant.    
