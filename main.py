@@ -117,7 +117,7 @@ if st.session_state.get('authentication_status'):
             )
             # st.markdown(f"Input Tokens: {input_tokens}")
             # st.markdown(f"Output Tokens: {output_tokens}")
-            st.markdown(f"Total Tokens: {total_tokens}")
+            st.markdown(f"Total Tokens: {total_tokens_str}")
 
             cost = input_tokens*.1/1000000 + output_tokens*.4/1000000
             formatted_cost = "${:,.4f}".format(cost)
