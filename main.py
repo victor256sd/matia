@@ -122,7 +122,7 @@ if st.session_state.get('authentication_status'):
         # Write response to the answer column.    
         with answer_col:
             if model == "o4-mini":
-                cleaned_response = re.sub(r'【.*?†.*?】', '', response2.choices[0].message.content)
+                cleaned_response = re.sub(r'【.*?†.*?】', '', response2.output_text.strip())
             else:
                 cleaned_response = re.sub(r'【.*?†.*?】', '', response2.output[1].content[0].text)
             st.markdown("#### Response")
