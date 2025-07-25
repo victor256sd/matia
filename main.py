@@ -94,21 +94,37 @@ if st.session_state.get('authentication_status'):
         client2 = OpenAI(api_key=openai_api_key)
         # Query the aitam library vector store and include internet
         # serach results.
-        with st.spinner('Searching...'):
-            response2 = client2.responses.create(
-                instructions = INSTRUCTION,
-                input = query,
-                model = model,
-                # temperature = 0.6,
-                tools = [{
-                            "type": "file_search",
-                            "vector_store_ids": [VECTOR_STORE_ID],
-                }],
-                include=["output[*].file_search_call.search_results"]
-            )
+        if model == "o4-mini":        
+            with st.spinner('Searching...'):
+                response2 = client2.responses.create(
+                    instructions = INSTRUCTION,
+                    input = query,
+                    model = model,
+                    tools = [{
+                                "type": "file_search",
+                                "vector_store_ids": [VECTOR_STORE_ID],
+                    }],
+                    include=["output[*].file_search_call.search_results"]
+                )
+        else:
+            with st.spinner('Searching...'):
+                response2 = client2.responses.create(
+                    instructions = INSTRUCTION,
+                    input = query,
+                    model = model,
+                    temperature = 0.6,
+                    tools = [{
+                                "type": "file_search",
+                                "vector_store_ids": [VECTOR_STORE_ID],
+                    }],
+                    include=["output[*].file_search_call.search_results"]
+                )
         # Write response to the answer column.    
         with answer_col:
-            cleaned_response = re.sub(r'【.*?†.*?】', '', response2.output[1].content[0].text)
+            if model == "o4-mini":
+                cleaned_response = re.sub(r'【.*?†.*?】', '', response['choices'][0]['message']['content'])
+            else:
+                cleaned_response = re.sub(r'【.*?†.*?】', '', response2.output[1].content[0].text)
             st.markdown("#### Response")
             st.markdown(cleaned_response)
         # Write files used to generate the answer.
