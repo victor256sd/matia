@@ -143,9 +143,9 @@ if st.session_state.get('authentication_status'):
                 st.markdown(f"**File(s):** {file_list_str}")
 
             if model == "o4-mini":
-                input_tokens = response.usage.prompt_tokens
-                output_tokens = response.usage.completion_tokens
-                total_tokens = response.usage.total_tokens
+                input_tokens = response2.usage.prompt_tokens
+                output_tokens = response2.usage.completion_tokens
+                total_tokens = response2.usage.total_tokens
             else:               
                 input_tokens = response2.usage.input_tokens
                 output_tokens = response2.usage.output_tokens
