@@ -53,14 +53,19 @@ if st.session_state.get('authentication_status'):
         Provide examples and best practices based on the manual’s content.
         Clarify error messages or unexpected behavior by referencing documentation.
         Maintain a helpful, concise, and technically accurate tone.
+
         Guidelines:
         
         Always ground your answers in the manual. Use the vector store to retrieve relevant content and cite or summarize it clearly.
         When helping with expressions, explain the syntax and function behavior using examples from the manual when possible.
+
         If a user asks something outside the scope of the manual, politely inform them and suggest alternative ways to get help (e.g., support channels).
         Avoid speculation. If the manual doesn’t contain the answer, say so clearly.
+        
         Use clear formatting for code, expressions, and references to manual sections (e.g., headings, bullet points, code blocks).
         Encourage learning by offering tips or pointing to related features when appropriate.
+
+        Format all responses with markdown.
     """
     
     # Set page layout and title.
@@ -129,21 +134,28 @@ if st.session_state.get('authentication_status'):
             st.markdown(cleaned_response)
         # Write files used to generate the answer.
         with sources_col:
-            st.markdown("#### Sources")
-            # Extract annotations from the response, and print source files.
-            annotations = response2.output[1].content[0].annotations
-            retrieved_files = set([response2.filename for response2 in annotations])
-            file_list_str = ", ".join(retrieved_files)
-            st.markdown(f"**File(s):** {file_list_str}")
+            if model != "o4-mini":
+                st.markdown("#### Sources")
+                # Extract annotations from the response, and print source files.
+                annotations = response2.output[1].content[0].annotations
+                retrieved_files = set([response2.filename for response2 in annotations])
+                file_list_str = ", ".join(retrieved_files)
+                st.markdown(f"**File(s):** {file_list_str}")
 
-            st.markdown("#### Token Usage")
-            input_tokens = response2.usage.input_tokens
-            output_tokens = response2.usage.output_tokens
-            total_tokens = input_tokens + output_tokens
+            if model == "o4-mini":
+                input_tokens = response.usage.prompt_tokens
+                output_tokens = response.usage.completion_tokens
+                total_tokens = response.usage.total_tokens
+            else:               
+                input_tokens = response2.usage.input_tokens
+                output_tokens = response2.usage.output_tokens
+                total_tokens = input_tokens + output_tokens
+
             input_tokens_str = f"{input_tokens:,}"
             output_tokens_str = f"{output_tokens:,}"
             total_tokens_str = f"{total_tokens:,}"
 
+            st.markdown("#### Token Usage")
             st.markdown(
                 f"""
                 <p style="margin-bottom:0;">Input Tokens: {input_tokens_str}</p>
