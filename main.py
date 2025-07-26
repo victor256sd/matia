@@ -58,14 +58,14 @@ if st.session_state.get('authentication_status'):
         st.stop()
     
     # Create new form to search aitam library vector store.    
-    with st.form(key="qa_form", clear_on_submit=False):
+    with st.form(key="qa_form", clear_on_submit=False, height="content"):
         query = st.text_area("**Query SDSURF Travel Policy 2024**", height="stretch")
         submit = st.form_submit_button("Query")
     # If submit button is clicked, query the aitam library.            
     if submit:
         # If form is submitted without a query, stop.
         if not query:
-            st.error("Enter a question to search the library!")
+            st.error("Enter a question to search travel policies!")
             st.stop()            
         # Setup output columns to display results.
         answer_col, sources_col = st.columns(2)
