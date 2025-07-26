@@ -60,7 +60,7 @@ if st.session_state.get('authentication_status'):
     # Create new form to search aitam library vector store.    
     with st.form(key="qa_form", clear_on_submit=False):
         # query = st.text_area("**Query SDSURF Travel Policy 2024**", height=None)
-        query = """
+        query = st.markdown("""
                 <textarea id="dynamic-textarea" style="width: 100%; overflow: hidden;" oninput="adjustHeight(this)"></textarea>
                 <script>
                     function adjustHeight(textarea) {
